@@ -7,7 +7,7 @@ Changes vs the kit trainer (which uses MSE on priority with no augmentation):
   * Image augmentation: random resized crop, horizontal flip, colour jitter, random
     darkening (night-like).
   * Checkpoint selection reports both frame-level and clip-pooled valid metrics
-    (pooling: siesta/c8/pool_clips.py). Selection uses the kit composite on clip-pooled scores.
+    (pooling: ch8_edge_triage/pool_clips.py). Selection uses the kit composite on clip-pooled scores.
   * --final-epochs N: after selection, optionally retrain on train+valid for N epochs.
 
 ONNX export keeps the kit's names (image -> keep_logit, priority_score, modality_logits,
@@ -166,7 +166,7 @@ def main() -> None:
                       dynamo=False)
     (args.out / "train_log.json").write_text(json.dumps({"best_epoch": best_ep, "log": log, "args": vars(args)},
                                                         default=str, indent=2))
-    print(f"Saved {onnx_path}. Predict with the kit, then pool with siesta/c8/pool_clips.py")
+    print(f"Saved {onnx_path}. Predict with the kit, then pool with ch8_edge_triage/pool_clips.py")
 
 
 if __name__ == "__main__":

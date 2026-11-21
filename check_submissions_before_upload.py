@@ -4,7 +4,7 @@ Checks the rules from the kits (ids, types, ranges, formats, duplicates) without
 test labels. Exit code 0 only if everything passes. Run it before EVERY upload.
 
 Usage (give only the parts you have):
-  python check_submissions.py \
+  python check_submissions_before_upload.py \
      --c6-kit <challenge-1-cuas-tracking> --c6-preds preds_test.json --c6-mot pred_mot/ \
      --c8-kit <challenge-4-edge-triage>   --c8-preds triage_test.jsonl \
      --c9-kit <challenge-5-acoustic-visual-cuas> --c9-preds c9_test.jsonl

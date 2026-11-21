@@ -1,0 +1,282 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Siesta test report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: calm team plan document
+   IDEA: an architect's spec booklet
+   PICTURE: the ranking table is the key graphic
+   COLOUR and TYPE: white, black, concrete planes, one yellow mark; Hanken Grotesk
+   LAYOUT: one readable column, section links row */
+:root{color-scheme:light dark;--bg:light-dark(#ffffff,#1a1a19);--ink:light-dark(#111,#ececea);--mute:light-dark(#55554f,#a9a9a3);--plane:light-dark(#ececea,#262624);--line:light-dark(#d8d8d4,#3a3a37);--acc:#ffe600}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html{scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16.5px/1.6 "Hanken Grotesk",system-ui,sans-serif;overflow-x:clip}
+header{background:var(--plane);padding:clamp(28px,4vw,56px) max(5vw,16px) 20px}
+header .t{max-width:980px;margin:0 auto}
+.scroll{display:flex;gap:6px 18px;flex-wrap:nowrap;overflow-x:auto;max-width:980px;margin:18px auto 0;padding-bottom:6px;font-size:14px}
+.scroll a{flex:none;color:var(--ink);text-decoration:none;border-bottom:2px solid transparent;padding:6px 0}
+.scroll a:hover,.scroll a:focus-visible{border-color:var(--acc);outline:none}
+@media(min-width:900px){header{position:sticky;top:-140px;z-index:2}}
+main{max-width:980px;margin:0 auto;padding:12px max(5vw,16px) 64px}
+h1{font-size:clamp(30px,4.6vw,46px);line-height:1.05;font-weight:700;margin:0;text-wrap:balance}
+h2{font-size:26px;line-height:1.15;margin:52px 0 14px;padding-top:14px;border-top:1px solid var(--ink);text-wrap:balance}
+h3{font-size:19px;margin:34px 0 8px}
+p,li{max-width:72ch}
+blockquote{margin:18px 0;padding:14px 18px;background:var(--plane);border-left:6px solid var(--acc)}
+blockquote p{margin:6px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:14px 0}
+th,td{text-align:left;vertical-align:top;padding:9px 10px;border-bottom:1px solid var(--line)}
+th{font-weight:700;border-bottom:2px solid var(--ink)}
+code{font-size:.92em;background:var(--plane);padding:1px 5px;border-radius:3px;overflow-wrap:anywhere}
+a{color:inherit}
+hr{border:0;border-top:1px solid var(--line);margin:32px 0}
+@media(max-width:600px){table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-block:10px;border-bottom:1px solid var(--line)}.stack td{display:flow-root;border:0;padding:3px 0;padding-inline-start:8em;text-align:start}.stack td::before{content:attr(data-l);float:inline-start;width:7.5em;margin-inline-start:-8em;font-weight:700;white-space:normal}.stack td:empty{display:none}}
+</style><script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script></head><body>
+<header><div class="t"><h1 id="siesta-test-report-and-requirements-coverage-sat-21-nov-1205">Siesta test report and requirements coverage (Sat 21 Nov, 12:05)</h1></div><nav class="scroll"><a href="#test-results">Test results</a><a href="#requirements-coverage-what-each-challenge-asks-where-its-covered-whats-still-open">Requirements coverage (what each challenge asks → where it's covered → what's still open)</a><a href="#known-limits-and-risks-be-honest-in-the-pitch">Known limits and risks (be honest in the pitch)</a></nav></header>
+<main>
+<p><strong>Result: 15 / 15 tests passed.</strong> Run with <code>python tests/run_all_tests.py ...</code> (full log in <code>3_TEST_REPORT_raw_results.json</code>).</p>
+<p>All tests ran against the <strong>real kit data</strong> and used the <strong>kits' own scorers</strong>. The environment had no internet for pretrained weights and 2 CPUs, so the detector used in the Ch 6 tests is a <strong>dummy ONNX with the exact RF-DETR inputs and outputs</strong>, and the Ch 8/9 models are <strong>1-epoch, non-pretrained plumbing models</strong>. Those tests prove <strong>mechanics and formats, not accuracy</strong>. Rerun the suite with real models via <code>--c6-onnx/--c8-onnx/--c9-onnx</code>.</p>
+<h2 id="test-results">Test results</h2>
+<table class="stack">
+<thead>
+<tr>
+<th>ID</th>
+<th>What it checks</th>
+<th>Result</th>
+<th>Key numbers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C6-1</td>
+<td>Tiled dataset: structure, every original image and box kept, boxes inside images, native scale, negatives empty, test copied unchanged</td>
+<td>PASS</td>
+<td>train 859 → 3266 images, 842 → 2544 boxes; valid 422 → 1590, 387 → 1182; median box area unchanged (1485 / 308 px²), so <strong>no downscaling</strong></td>
+</tr>
+<tr>
+<td>C6-2</td>
+<td>Tile grid covers every pixel of all 14 image/video sizes; tiles ≤ 384</td>
+<td>PASS</td>
+<td>max 24 tiles per image</td>
+</tr>
+<tr>
+<td>C6-3</td>
+<td>Class-wise NMS: keeps different classes, removes duplicates, caps at top 100</td>
+<td>PASS</td>
+<td></td>
+</tr>
+<tr>
+<td>C6-4</td>
+<td><code>tiled_detect.py</code> on <strong>all</strong> 422 valid + 328 test images; kit COCO scorer accepts</td>
+<td>PASS</td>
+<td>9.4 model calls per image on average</td>
+</tr>
+<tr>
+<td>C6-5</td>
+<td><strong>Motion windows vs real target position</strong> (real videos, no detector)</td>
+<td>PASS (informative)</td>
+<td>Target inside a motion window: seq 1: 65%, seq 2: 97%, seq 3: 95% (12 windows), <strong>seq 4 (7 px drone): 19%</strong> (12 windows) / 1% (6). <strong>Decision: default raised to 12; use FULL mode for scored submissions; motion mode for the efficiency story</strong> (carry-over windows around previous detections add coverage once a target is found).</td>
+</tr>
+<tr>
+<td>C6-6</td>
+<td><code>detect_video.py</code> full + motion on <strong>all 8</strong> sequences → <code>track.py</code> (offline + camera compensation, and online) → kit MOT scorer</td>
+<td>PASS</td>
+<td>detector calls per frame: full 13.3 avg (25 on 1920×1080), motion 6.9 avg (about 10 on 1920×1080), so <strong>about 48% fewer calls</strong></td>
+</tr>
+<tr>
+<td>C6-7</td>
+<td>Tracker output policy on synthetic detections (3 seeds), kit MOT scorer (<strong>synthetic, not a real score</strong>)</td>
+<td>PASS</td>
+<td>MOTA −0.81/−0.92/−0.86 → <strong>+0.61/+0.58/+0.49</strong>; IDF1 0.41/0.35/0.34 → <strong>0.80/0.75/0.72</strong>; ID switches 10–11 → 0–3</td>
+</tr>
+<tr>
+<td>C8-1</td>
+<td><code>pool_clips.py</code>: ids and order preserved, scores in [0,1], clip frames ranked together; kit scorer; synthetic noisy predictions (10 seeds)</td>
+<td>PASS</td>
+<td>capture@1% 0.40 → <strong>0.90</strong>, capture@5% 0.80 → <strong>0.99</strong>, Spearman 0.55 → <strong>0.69</strong></td>
+</tr>
+<tr>
+<td>C8-2</td>
+<td>Test-split prediction with a trained ONNX → pooling → test file</td>
+<td>PASS</td>
+<td></td>
+</tr>
+<tr>
+<td>C9-1</td>
+<td><code>predict_consistent.py</code>: wake == (class == drone_buzz) on every clip; kit scorer accepts</td>
+<td>PASS</td>
+<td></td>
+</tr>
+<tr>
+<td>C9-2</td>
+<td>The label identity behind the rule holds on all 56 labelled clips</td>
+<td>PASS</td>
+<td>56 / 56</td>
+</tr>
+<tr>
+<td>M-1</td>
+<td>Metis <code>preprocess_*.py</code> vs kit inference preprocessing on <strong>all 448 calibration images</strong></td>
+<td>PASS</td>
+<td>max difference <strong>0.0</strong></td>
+</tr>
+<tr>
+<td>CHK-1</td>
+<td><code>check_submissions_before_upload.py</code> passes the complete test set (Ch 6 COCO + seq 5–8 MOT, Ch 8, Ch 9)</td>
+<td>PASS</td>
+<td></td>
+</tr>
+<tr>
+<td>CHK-2</td>
+<td>Checker catches 6 injected mistakes</td>
+<td>PASS</td>
+<td>missing MOT file, 0-based MOT class, duplicate (frame,id), COCO class 3, missing Ch 8 id, invalid Ch 9 class: <strong>all caught</strong></td>
+</tr>
+<tr>
+<td>RF-1</td>
+<td>RF-DETR's <strong>own training loader</strong> (<code>build_roboflow_from_coco</code>) loads the tiled dataset</td>
+<td>PASS</td>
+<td>tiled train 3266 / val 1590; same label ids {0,1,2} as the kit's original dataset</td>
+</tr>
+</tbody>
+</table>
+<h2 id="requirements-coverage-what-each-challenge-asks-where-its-covered-whats-still-open">Requirements coverage (what each challenge asks → where it's covered → what's still open)</h2>
+<h3 id="ch-6-detection-tracking-judging-proposal-detection-40-tracking-40-edge-20">Ch 6: detection + tracking (judging proposal: detection 40%, tracking 40%, edge 20%)</h3>
+<table class="stack">
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Covered by</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Build on RF-DETR (Nano 384)</td>
+<td>kit <code>train_rfdetr.py</code> on <code>tiled_dataset</code> (RF-1 verified loader)</td>
+<td><strong>To do on the Mac:</strong> actual training</td>
+</tr>
+<tr>
+<td>Improve small-object detection (small_AP@50)</td>
+<td>idea A: native tiles in training (C6-1) and inference (C6-2, C6-4)</td>
+<td>Mechanics verified; <strong>gain must be measured on valid vs kit baseline</strong></td>
+</tr>
+<tr>
+<td>COCO JSON detections, valid + test</td>
+<td><code>tiled_detect.py</code> (C6-4), checker (CHK)</td>
+<td>Verified format</td>
+</tr>
+<tr>
+<td>Stable tracks through motion, misses, clutter (MOTA, IDF1, continuity)</td>
+<td><code>track.py</code>: camera compensation, centre-distance gating, two-stage association, confirmation, gap fill, scorer-aware output (C6-6, C6-7)</td>
+<td>Mechanics verified (synthetic); <strong>tune on real detections with leave-one-sequence-out</strong></td>
+</tr>
+<tr>
+<td>MOT files for all 8 sequences</td>
+<td><code>detect_video.py</code> + <code>track.py</code> (C6-6), checker</td>
+<td>Verified format</td>
+</tr>
+<tr>
+<td>Edge: Metis compile, INT8, end-to-end throughput, &lt; 1 GB</td>
+<td><code>metis_axelera_compile/preprocess_rfdetr.py</code> (M-1), backbone compile command</td>
+<td><strong>Open:</strong> needs Voyager SDK + device; host-tail timing must run on the Axelera host</td>
+</tr>
+<tr>
+<td>Efficiency story</td>
+<td>motion mode: about 48% fewer detector calls (C6-6)</td>
+<td>Verified mechanics; coverage caveat in C6-5</td>
+</tr>
+</tbody>
+</table>
+<h3 id="ch-8-edge-triage-proposal-capture-55-spearman-25-metis-20-bonus-for-clip-dedup-and-100-on-chip">Ch 8: edge triage (proposal: capture 55%, Spearman 25%, Metis 20% + bonus for clip dedup and 100% on-chip)</h3>
+<table class="stack">
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Covered by</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Distil teacher labels into a compact model</td>
+<td><code>ch8_edge_triage/train_rank.py</code> (kit model + ranking loss + augmentation)</td>
+<td>Smoke-tested; <strong>real training on the team machine</strong></td>
+</tr>
+<tr>
+<td>Capture within 1% / 5% budgets, Spearman</td>
+<td>ranking loss + <code>pool_clips.py</code> (C8-1)</td>
+<td>Synthetic gain verified; <strong>measure on valid</strong></td>
+</tr>
+<tr>
+<td>Temporal clip dedup (bonus)</td>
+<td><code>pool_clips.py</code> ranks clips, not frames</td>
+<td>Implemented and tested</td>
+</tr>
+<tr>
+<td>JSONL output, exact ids</td>
+<td>kit predictor + pooling (C8-2), checker</td>
+<td>Verified</td>
+</tr>
+<tr>
+<td>Metis INT8, throughput, power, footprint</td>
+<td><code>metis_axelera_compile/preprocess_cnn.py</code> (M-1)</td>
+<td><strong>Open:</strong> compile and measure; power only if a meter or tool exists</td>
+</tr>
+</tbody>
+</table>
+<h3 id="ch-9-acoustic-wake-proposal-wake-f1-40-class-accuracy-25-camera-off-proxy-20-metis-15">Ch 9: acoustic wake (proposal: wake F1 40%, class accuracy 25%, camera-off proxy 20%, Metis 15%)</h3>
+<table class="stack">
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Covered by</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Wake decision + 4-class sound label per 5 s clip</td>
+<td><code>ch9_acoustic_wake/train_cv.py</code> + <code>predict_consistent.py</code></td>
+<td>Smoke-tested; <strong>real training with pretrained weights</strong></td>
+</tr>
+<tr>
+<td>Robust threshold despite 8 valid clips</td>
+<td>7-fold CV on 56 clips, threshold from out-of-fold predictions</td>
+<td>Implemented</td>
+</tr>
+<tr>
+<td>Wake/class never contradict</td>
+<td>fused rule (C9-1, C9-2)</td>
+<td>Verified</td>
+</tr>
+<tr>
+<td>Camera-off proxy</td>
+<td>reported by kit scorer; utility F1 − 0.15 × camera-on, same as kit</td>
+<td>Implemented</td>
+</tr>
+<tr>
+<td>JSONL output, exact ids</td>
+<td><code>predict_consistent.py</code>, checker</td>
+<td>Verified</td>
+</tr>
+<tr>
+<td>Metis wake latency and footprint</td>
+<td><code>metis_axelera_compile/preprocess_cnn.py</code> (M-1)</td>
+<td><strong>Open:</strong> compile and measure</td>
+</tr>
+<tr>
+<td>Optional cascade to visual check</td>
+<td>demo layer (P4) on Ch 9 paired videos</td>
+<td><strong>Open:</strong> build the demo video</td>
+</tr>
+</tbody>
+</table>
+<h2 id="known-limits-and-risks-be-honest-in-the-pitch">Known limits and risks (be honest in the pitch)</h2>
+<ol>
+<li>No real accuracy numbers exist yet; everything above is mechanics.</li>
+<li>Motion windows miss the 7 px drone in seq 4 most of the time, so <strong>don't rely on motion-only detection for scored files.</strong></li>
+<li>Metis compilation of RF-DETR is unverified (deformable attention). Cut line Sat 14:00, as in the brief.</li>
+<li>The Ch 8/9 validation and test sets are tiny (Ch 8 test budgets k = 1 and 6; Ch 9 has 6 test clips), so scores are noisy.</li>
+<li>Without pretrained weights, the Ch 9 model collapses to "always wake" (observed). <strong>Confirm the weights download.</strong></li>
+</ol></main></body></html>

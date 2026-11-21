@@ -1,6 +1,6 @@
 # Siesta test report and requirements coverage (Sat 21 Nov, 12:05)
 
-**Result: 15 / 15 tests passed.** Run with `python tests/run_all_tests.py ...` (full log in `TEST_REPORT.json`).
+**Result: 15 / 15 tests passed.** Run with `python tests/run_all_tests.py ...` (full log in `3_TEST_REPORT_raw_results.json`).
 
 All tests ran against the **real kit data** and used the **kits' own scorers**. The environment had no internet for pretrained weights and 2 CPUs, so the detector used in the Ch 6 tests is a **dummy ONNX with the exact RF-DETR inputs and outputs**, and the Ch 8/9 models are **1-epoch, non-pretrained plumbing models**. Those tests prove **mechanics and formats, not accuracy**. Rerun the suite with real models via `--c6-onnx/--c8-onnx/--c9-onnx`.
 
@@ -20,7 +20,7 @@ All tests ran against the **real kit data** and used the **kits' own scorers**. 
 | C9-1 | `predict_consistent.py`: wake == (class == drone_buzz) on every clip; kit scorer accepts | PASS | |
 | C9-2 | The label identity behind the rule holds on all 56 labelled clips | PASS | 56 / 56 |
 | M-1 | Metis `preprocess_*.py` vs kit inference preprocessing on **all 448 calibration images** | PASS | max difference **0.0** |
-| CHK-1 | `check_submissions.py` passes the complete test set (Ch 6 COCO + seq 5–8 MOT, Ch 8, Ch 9) | PASS | |
+| CHK-1 | `check_submissions_before_upload.py` passes the complete test set (Ch 6 COCO + seq 5–8 MOT, Ch 8, Ch 9) | PASS | |
 | CHK-2 | Checker catches 6 injected mistakes | PASS | missing MOT file, 0-based MOT class, duplicate (frame,id), COCO class 3, missing Ch 8 id, invalid Ch 9 class: **all caught** |
 | RF-1 | RF-DETR's **own training loader** (`build_roboflow_from_coco`) loads the tiled dataset | PASS | tiled train 3266 / val 1590; same label ids {0,1,2} as the kit's original dataset |
 
@@ -34,27 +34,27 @@ All tests ran against the **real kit data** and used the **kits' own scorers**. 
 | COCO JSON detections, valid + test | `tiled_detect.py` (C6-4), checker (CHK) | Verified format |
 | Stable tracks through motion, misses, clutter (MOTA, IDF1, continuity) | `track.py`: camera compensation, centre-distance gating, two-stage association, confirmation, gap fill, scorer-aware output (C6-6, C6-7) | Mechanics verified (synthetic); **tune on real detections with leave-one-sequence-out** |
 | MOT files for all 8 sequences | `detect_video.py` + `track.py` (C6-6), checker | Verified format |
-| Edge: Metis compile, INT8, end-to-end throughput, < 1 GB | `metis/preprocess_rfdetr.py` (M-1), backbone compile command | **Open:** needs Voyager SDK + device; host-tail timing must run on the Axelera host |
+| Edge: Metis compile, INT8, end-to-end throughput, < 1 GB | `metis_axelera_compile/preprocess_rfdetr.py` (M-1), backbone compile command | **Open:** needs Voyager SDK + device; host-tail timing must run on the Axelera host |
 | Efficiency story | motion mode: about 48% fewer detector calls (C6-6) | Verified mechanics; coverage caveat in C6-5 |
 
 ### Ch 8: edge triage (proposal: capture 55%, Spearman 25%, Metis 20% + bonus for clip dedup and 100% on-chip)
 | Requirement | Covered by | Status |
 |---|---|---|
-| Distil teacher labels into a compact model | `c8/train_rank.py` (kit model + ranking loss + augmentation) | Smoke-tested; **real training on the team machine** |
+| Distil teacher labels into a compact model | `ch8_edge_triage/train_rank.py` (kit model + ranking loss + augmentation) | Smoke-tested; **real training on the team machine** |
 | Capture within 1% / 5% budgets, Spearman | ranking loss + `pool_clips.py` (C8-1) | Synthetic gain verified; **measure on valid** |
 | Temporal clip dedup (bonus) | `pool_clips.py` ranks clips, not frames | Implemented and tested |
 | JSONL output, exact ids | kit predictor + pooling (C8-2), checker | Verified |
-| Metis INT8, throughput, power, footprint | `metis/preprocess_cnn.py` (M-1) | **Open:** compile and measure; power only if a meter or tool exists |
+| Metis INT8, throughput, power, footprint | `metis_axelera_compile/preprocess_cnn.py` (M-1) | **Open:** compile and measure; power only if a meter or tool exists |
 
 ### Ch 9: acoustic wake (proposal: wake F1 40%, class accuracy 25%, camera-off proxy 20%, Metis 15%)
 | Requirement | Covered by | Status |
 |---|---|---|
-| Wake decision + 4-class sound label per 5 s clip | `c9/train_cv.py` + `predict_consistent.py` | Smoke-tested; **real training with pretrained weights** |
+| Wake decision + 4-class sound label per 5 s clip | `ch9_acoustic_wake/train_cv.py` + `predict_consistent.py` | Smoke-tested; **real training with pretrained weights** |
 | Robust threshold despite 8 valid clips | 7-fold CV on 56 clips, threshold from out-of-fold predictions | Implemented |
 | Wake/class never contradict | fused rule (C9-1, C9-2) | Verified |
 | Camera-off proxy | reported by kit scorer; utility F1 − 0.15 × camera-on, same as kit | Implemented |
 | JSONL output, exact ids | `predict_consistent.py`, checker | Verified |
-| Metis wake latency and footprint | `metis/preprocess_cnn.py` (M-1) | **Open:** compile and measure |
+| Metis wake latency and footprint | `metis_axelera_compile/preprocess_cnn.py` (M-1) | **Open:** compile and measure |
 | Optional cascade to visual check | demo layer (P4) on Ch 9 paired videos | **Open:** build the demo video |
 
 ## Known limits and risks (be honest in the pitch)

@@ -23,7 +23,7 @@ import traceback
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "c6"))
+sys.path.insert(0, str(ROOT / "ch6_detection_tracking"))
 PY = sys.executable
 RESULTS = []
 
@@ -85,7 +85,7 @@ def t_tiled(c6: Path, work: Path):
     import statistics as st
     from PIL import Image
     out = work / "tiled_dataset"
-    sh([PY, ROOT / "c6/build_tiled_dataset.py", "--src", c6 / "dataset", "--out", out])
+    sh([PY, ROOT / "ch6_detection_tracking/build_tiled_dataset.py", "--src", c6 / "dataset", "--out", out])
     info = {}
     for split in ("train", "valid"):
         src = json.loads((c6 / "dataset" / split / "_annotations.coco.json").read_text())
@@ -155,10 +155,10 @@ def t_nms():
 
 @test("C6-4 tiled_detect on ALL valid + test images -> kit COCO scorer accepts; checker accepts test file")
 def t_detect(c6: Path, work: Path, onnx: Path):
-    sh([PY, ROOT / "c6/tiled_detect.py", "--kit", c6, "--onnx", onnx, "--split", "valid", "--out", work / "preds_valid.json"])
+    sh([PY, ROOT / "ch6_detection_tracking/tiled_detect.py", "--kit", c6, "--onnx", onnx, "--split", "valid", "--out", work / "preds_valid.json"])
     s = last_json(sh([PY, c6 / "starter-kit/evaluate_submissions.py", "detect", "--gt",
                       c6 / "dataset/valid/_annotations.coco.json", "--preds", work / "preds_valid.json"]))
-    o = last_json(sh([PY, ROOT / "c6/tiled_detect.py", "--kit", c6, "--onnx", onnx, "--split", "test", "--out",
+    o = last_json(sh([PY, ROOT / "ch6_detection_tracking/tiled_detect.py", "--kit", c6, "--onnx", onnx, "--split", "test", "--out",
                       work / "sub/preds_test.json"]))
     assert o["images"] == 328
     return {"valid_scored_keys": sorted(s)[:6], "test_images": o["images"], "calls_per_image": o["calls_per_image"]}
@@ -198,13 +198,13 @@ def t_motion_cover(c6: Path):
 def t_video(c6: Path, work: Path, onnx: Path):
     stats = {}
     for mode in ("full", "motion"):
-        sh([PY, ROOT / "c6/detect_video.py", "--kit", c6, "--onnx", onnx, "--mode", mode, "--out", work / f"dets_{mode}.json"])
+        sh([PY, ROOT / "ch6_detection_tracking/detect_video.py", "--kit", c6, "--onnx", onnx, "--mode", mode, "--out", work / f"dets_{mode}.json"])
         d = json.loads((work / f"dets_{mode}.json").read_text())
         assert all(f"seq_000{i}" in d for i in range(1, 9)), "missing sequences"
         stats[mode] = {k: v["model_calls_per_frame"] for k, v in d["_stats"].items() if k.startswith("seq")}
     for variant, extra in (("offline_cam", ["--kit", c6]), ("online", ["--online"])):
         out = work / f"pred_mot_{variant}"
-        sh([PY, ROOT / "c6/track.py", "--dets", work / "dets_motion.json", "--out-dir", out, *extra])
+        sh([PY, ROOT / "ch6_detection_tracking/track.py", "--dets", work / "dets_motion.json", "--out-dir", out, *extra])
         assert len(list(out.glob("seq_*.txt"))) == 8
         last_json(sh([PY, c6 / "starter-kit/evaluate_submissions.py", "mot", "--gt-dir", c6 / "tracking_eval",
                       "--pred-dir", out, "--split", "valid"]))
@@ -216,7 +216,7 @@ def t_video(c6: Path, work: Path, onnx: Path):
 
 @test("C6-7 tracker output policy on synthetic detections (3 seeds), kit MOT scorer: NOT a real score")
 def t_synth(c6: Path, work: Path):
-    out = sh([PY, ROOT / "c6/synth_test.py", "--kit", c6, "--work", work / "synth"])
+    out = sh([PY, ROOT / "ch6_detection_tracking/synth_test.py", "--kit", c6, "--work", work / "synth"])
     rows = [json.loads(l.split(": ", 1)[1]) for l in out.strip().splitlines() if l.startswith("seed")]
     for r in rows:
         assert r["policy_on"]["MOTA"] > r["policy_off"]["MOTA"] and r["policy_on"]["IDF1"] > r["policy_off"]["IDF1"]
@@ -236,7 +236,7 @@ def t_pool(c8: Path, work: Path):
                                            "priority_score": round(min(1, max(0, x["priority_score"] + r.gauss(0, 0.25))), 6)})
                                for x in rows) + "\n")
         q = work / "c8q.jsonl"
-        sh([PY, ROOT / "c8/pool_clips.py", "--kit", c8, "--split", "valid", "--preds", p, "--out", q])
+        sh([PY, ROOT / "ch8_edge_triage/pool_clips.py", "--kit", c8, "--split", "valid", "--preds", p, "--out", q])
         P = [json.loads(l) for l in p.read_text().splitlines()]
         Q = [json.loads(l) for l in q.read_text().splitlines()]
         assert [a["id"] for a in P] == [b["id"] for b in Q]
@@ -262,7 +262,7 @@ def t_c8_test(c8: Path, work: Path, onnx: Path | None):
     else:
         rows = [json.loads(l) for l in (c8 / "dataset/test/labels.jsonl").read_text().splitlines()]
         raw.write_text("\n".join(json.dumps({"id": x["id"], "triage_keep": False, "priority_score": random.random()}) for x in rows) + "\n")
-    sh([PY, ROOT / "c8/pool_clips.py", "--kit", c8, "--split", "test", "--preds", raw, "--out", work / "sub/c8_test.jsonl"])
+    sh([PY, ROOT / "ch8_edge_triage/pool_clips.py", "--kit", c8, "--split", "test", "--preds", raw, "--out", work / "sub/c8_test.jsonl"])
     return {"used_trained_onnx": bool(onnx)}
 
 
@@ -270,7 +270,7 @@ def t_c8_test(c8: Path, work: Path, onnx: Path | None):
 @test("C9-1 predict_consistent: wake == (class == drone_buzz) on every clip; kit scorer accepts valid; test file written")
 def t_c9(c9: Path, work: Path, onnx: Path):
     for split, out in (("valid", work / "c9_valid.jsonl"), ("test", work / "sub/c9_test.jsonl")):
-        sh([PY, ROOT / "c9/predict_consistent.py", "--challenge-dir", c9, "--onnx", onnx, "--split", split, "--out", out])
+        sh([PY, ROOT / "ch9_acoustic_wake/predict_consistent.py", "--challenge-dir", c9, "--onnx", onnx, "--split", split, "--out", out])
         for l in out.read_text().splitlines():
             r = json.loads(l)
             assert r["wake_triggered"] == (r["sound_class"] == "drone_buzz"), r
@@ -303,7 +303,7 @@ def t_pre(c6: Path, c8: Path, c9: Path):
         m = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(m)
         return m
-    cnn, rf = mod(ROOT / "metis/preprocess_cnn.py"), mod(ROOT / "metis/preprocess_rfdetr.py")
+    cnn, rf = mod(ROOT / "metis_axelera_compile/preprocess_cnn.py"), mod(ROOT / "metis_axelera_compile/preprocess_rfdetr.py")
     kit = load_kit(c6 / "starter-kit")
     worst, n = 0.0, 0
     for f in sorted((c6 / "calibration").glob("*.jpg")):
@@ -322,7 +322,7 @@ def t_pre(c6: Path, c8: Path, c9: Path):
 
 @test("CHK-1 check_submissions PASSES on the complete test set (Ch 6 COCO + 4 MOT, Ch 8, Ch 9)")
 def t_chk_ok(c6, c8, c9, work):
-    out = sh([PY, ROOT / "check_submissions.py", "--c6-kit", c6, "--c6-preds", work / "sub/preds_test.json",
+    out = sh([PY, ROOT / "check_submissions_before_upload.py", "--c6-kit", c6, "--c6-preds", work / "sub/preds_test.json",
               "--c6-mot", work / "sub/pred_mot", "--c8-kit", c8, "--c8-preds", work / "sub/c8_test.jsonl",
               "--c9-kit", c9, "--c9-preds", work / "sub/c9_test.jsonl"])
     assert "PASS" in out
@@ -338,7 +338,7 @@ def t_chk_bad(c6, c8, c9, work):
     def run(**over):
         args = {"--c6-preds": base / "preds_test.json", "--c6-mot": base / "pred_mot",
                 "--c8-preds": base / "c8_test.jsonl", "--c9-preds": base / "c9_test.jsonl", **over}
-        r = subprocess.run([PY, ROOT / "check_submissions.py", "--c6-kit", c6, "--c8-kit", c8, "--c9-kit", c9,
+        r = subprocess.run([PY, ROOT / "check_submissions_before_upload.py", "--c6-kit", c6, "--c8-kit", c8, "--c9-kit", c9,
                             *[str(x) for kv in args.items() for x in kv]], capture_output=True, text=True)
         return r.returncode != 0
     bad = work / "bad"
@@ -433,9 +433,9 @@ def main() -> None:
     t_pre(a.c6, a.c8, a.c9)
     t_chk_ok(a.c6, a.c8, a.c9, a.work); t_chk_bad(a.c6, a.c8, a.c9, a.work)
     t_rfdetr(a.work)
-    (a.work / "TEST_REPORT.json").write_text(json.dumps(RESULTS, indent=2))
+    (a.work / "3_TEST_REPORT_raw_results.json").write_text(json.dumps(RESULTS, indent=2))
     n_fail = sum(r["status"] == "FAIL" for r in RESULTS)
-    print(f"\n{len(RESULTS) - n_fail}/{len(RESULTS)} tests passed. Report: {a.work / 'TEST_REPORT.json'}")
+    print(f"\n{len(RESULTS) - n_fail}/{len(RESULTS)} tests passed. Report: {a.work / '3_TEST_REPORT_raw_results.json'}")
     sys.exit(1 if n_fail else 0)
 
 

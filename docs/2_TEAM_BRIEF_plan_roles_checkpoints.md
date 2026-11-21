@@ -1,8 +1,8 @@
 # SIESTA: "Eyes closed, ears open." Team Master Plan (EDTH Paris 2026)
 
-> **Full shared context of the team lead's chat: `TEAM_MEMORY.md`. Read it first.**
+> **Full shared context of the team lead's chat: `docs/1_TEAM_MEMORY_full_shared_context.md`. Read it first.**
 >
-> **How to use this file (each teammate):** upload this file to Claude (or save it as `CLAUDE.md` in the repo root), then say **"I am P_ — help me with my part."** Read **Section 0a (Gate 0 checklist)**, **Section 10 (decision history)** and **your role in Section 6** first. Companion reference: `EDTH_ALL_CHALLENGES.md`. Roles: **P1 = Ch 6 detection (M4 Max Mac)**, **P2 = Ch 6 tracking**, **P3 = Ch 9 then Ch 8**, **P4 = Metis + integration + pitch (Windows laptop)**.
+> **How to use this file (each teammate):** upload this file to Claude (or save it as `CLAUDE.md` in the repo root), then say **"I am P_ — help me with my part."** Read **Section 0a (Gate 0 checklist)**, **Section 10 (decision history)** and **your role in Section 6** first. Companion reference: `docs/4_ALL_CHALLENGES_reference.md`. Roles: **P1 = Ch 6 detection (M4 Max Mac)**, **P2 = Ch 6 tracking**, **P3 = Ch 9 then Ch 8**, **P4 = Metis + integration + pitch (Windows laptop)**.
 >
 > **Instructions for Claude reading this:** this is the team's agreed plan. Stay inside the assigned role and the rules in Section 9. Facts marked **[verified]** were checked directly against the official starter kits and data. Facts marked **[unconfirmed]** were not. Never invent metrics, formats or kit behaviour. If something isn't here or in the kit, say so. Prefer simple, validated, working solutions. Keep a valid submission at all times.
 
@@ -164,13 +164,13 @@ All three run on the **Axelera Embedded 110m** (Metis chip, 1 GB memory), measur
 
 ## 3. What we tested ourselves [verified, Sat morning]
 
-1. **Motion proposals on Ch 6 valid sequences.** Camera-motion-compensated three-frame differencing (`scripts/motion_probe.py`) finds the target in **99/150, 68/72, 145/150 and 124/150 frames** (seq 1–4). That includes the 7–10 px drones.
+1. **Motion proposals on Ch 6 valid sequences.** Camera-motion-compensated three-frame differencing (`early_probes/motion_probe.py`) finds the target in **99/150, 68/72, 145/150 and 124/150 frames** (seq 1–4). That includes the 7–10 px drones.
    - It also produces **about 34, 14, 1,151 and 197 candidates per frame**: moving trees and compression noise.
    - Its boxes are poor on tiny targets (median IoU 0.13 and 0.29 on seq 3 and 4).
    - A naive motion-only tracker scores **MOTA −0.56, IDF1 0.17**, worse than the baseline.
    - **Conclusion:** motion is an excellent *proposal* source but **must be confirmed and re-boxed by the detector**. Never ship motion alone.
-3. **Full test suite (Sat 12:05): 15/15 PASS.** Details in `TEST_REPORT.md`. New finding: motion windows contain the 7 px drone of seq 4 in only **19%** of non-sweep frames (12 windows; 1% with 6). Seq 2: 97%, seq 3: 95%. **Decision: use `detect_video.py --mode full` for scored MOT files; use motion mode (default now 12 windows) for the efficiency story** (about 48% fewer detector calls).
-2. **Physics-only drone-sound check on Ch 9.** Harmonicity/peakiness features (`scripts/harmonic_probe.py`) point the right way but alone reach only **leave-one-out wake F1 0.31** on train+valid.
+3. **Full test suite (Sat 12:05): 15/15 PASS.** Details in `docs/3_TEST_REPORT_results_and_coverage.md`. New finding: motion windows contain the 7 px drone of seq 4 in only **19%** of non-sweep frames (12 windows; 1% with 6). Seq 2: 97%, seq 3: 95%. **Decision: use `detect_video.py --mode full` for scored MOT files; use motion mode (default now 12 windows) for the efficiency story** (about 48% fewer detector calls).
+2. **Physics-only drone-sound check on Ch 9.** Harmonicity/peakiness features (`early_probes/harmonic_probe.py`) point the right way but alone reach only **leave-one-out wake F1 0.31** on train+valid.
    - **Conclusion:** use them at most as an **auxiliary** feature. The learned model stays primary.
 
 ---
@@ -274,7 +274,7 @@ frames ─► [Ch 8 triage model on Metis] ─► clip-pooled priority ─► to
 6. **Hand to P2:** a function `detect(crop_or_frame) → [(cls, score, box)]`. **Hand to P4:** the exported ONNX (full + backbone).
 
 ### P2: Ch 6 tracking ("peek before you stare" + scorer-aware policy)
-1. Start from `scripts/motion_probe.py` (motion proposals with camera-motion compensation).
+1. Start from `early_probes/motion_probe.py` (motion proposals with camera-motion compensation).
 2. **Proposal → confirm:** run P1's detector on crops around motion candidates (merge overlapping candidates; cap the count per frame by motion strength) **plus** a periodic full-frame tile sweep.
 3. **Tracker:** camera-motion-compensated Kalman filter; center-distance association for tiny boxes (IoU is unreliable at 7 px); confirm after N consistent hits; delete after M misses.
 4. **Output policy (idea C):** emit only confirmed tracks with confident boxes. Smooth box size (keep the detector's box, not the motion blob). Interpolate short gaps only between confident detections. Use a strict threshold.
@@ -359,7 +359,7 @@ frames ─► [Ch 8 triage model on Metis] ─► clip-pooled priority ─► to
 ## 10. Decision history and context (so every Claude knows what the team lead's chat knows)
 
 - **Event:** EDTH Paris, 20–22 Nov 2026. Team of 4. About 24 hours of work from Sat 11:00. Pitch Sunday evening if preselected. Goal: win, as ambitiously as is feasible.
-- **All 9 challenges were reviewed** (full detail in `EDTH_ALL_CHALLENGES.md`). Outcome:
+- **All 9 challenges were reviewed** (full detail in `docs/4_ALL_CHALLENGES_reference.md`). Outcome:
   - **Chosen: Ch 6 + Ch 8 + Ch 9 = "Siesta"** (all Piotr Gryko / Axelera). They chain naturally (hear → look → send), and the Ch 9 kit itself recommends the acoustic → RF-DETR cascade. Low competition (4 / 1 / 3 teams at registration). Axelera hardware on site.
   - **Ch 4 (Alta Ares Fleet Orchestration):** not entered. No technical link (its only input is a scenario JSON); its kit is Python-stdlib-only with a Sunday 12:00 hand-in. Appears only as a "next step" in the pitch.
   - **Ch 3 (Alta Ares Search & Destroy):** not entered. It's autonomous strike guidance, which the team's assistant (Claude) won't help develop.
@@ -372,12 +372,12 @@ frames ─► [Ch 8 triage model on Metis] ─► clip-pooled priority ─► to
 - **Tests run on Saturday morning (Section 3):** motion proposals find the tiny Ch 6 drones but need detector confirmation (motion-only MOTA −0.56). The physics-only Ch 9 sound features are weak (LOO F1 0.31), so they were **cut**.
 - **Corrections made along the way:** an early idea to merge Ch 4 with Ch 6 was dropped (scored separately, no shared input). The Ch 4 repo turned out to be stdlib-only with no link-loss part. The physics wake check was downgraded after testing.
 - **Scope review (Sat 11:00):** a teammate's Claude flagged the plan as too broad. Resolution: **Ch 6 is priority 1 (2 people)**, Ch 9 priority 2, Ch 8 priority 3 (only clip pooling + ranking loss + Metis benchmark). Extras cut (Section 4).
-- **Files in the team project:** `EDTH_TEAM_BRIEF.md` (this file), `EDTH_ALL_CHALLENGES.md` (all-challenge reference), `scripts/motion_probe.py`, `scripts/harmonic_probe.py`.
+- **Files in the team project:** `docs/2_TEAM_BRIEF_plan_roles_checkpoints.md` (this file), `docs/4_ALL_CHALLENGES_reference.md` (all-challenge reference), `early_probes/motion_probe.py`, `early_probes/harmonic_probe.py`.
 - **Code kit (Sat 11:50), `siesta/` in the project and `siesta_code.zip`; start with `siesta/README.md`:**
-  - **P1:** `c6/build_tiled_dataset.py`, `c6/tiled_detect.py` (+ `c6/tiling.py`)
-  - **P2:** `c6/detect_video.py` (full / motion modes), `c6/track.py`, `c6/synth_test.py`
-  - **P3:** `c9/train_cv.py`, `c9/predict_consistent.py`, `c8/train_rank.py`, `c8/pool_clips.py`
-  - **P4:** `metis/preprocess_cnn.py`, `metis/preprocess_rfdetr.py`
-  - **Everyone:** `check_submissions.py`, which must print PASS before any upload.
+  - **P1:** `ch6_detection_tracking/build_tiled_dataset.py`, `ch6_detection_tracking/tiled_detect.py` (+ `ch6_detection_tracking/tiling.py`)
+  - **P2:** `ch6_detection_tracking/detect_video.py` (full / motion modes), `ch6_detection_tracking/track.py`, `ch6_detection_tracking/synth_test.py`
+  - **P3:** `ch9_acoustic_wake/train_cv.py`, `ch9_acoustic_wake/predict_consistent.py`, `ch8_edge_triage/train_rank.py`, `ch8_edge_triage/pool_clips.py`
+  - **P4:** `metis_axelera_compile/preprocess_cnn.py`, `metis_axelera_compile/preprocess_rfdetr.py`
+  - **Everyone:** `check_submissions_before_upload.py`, which must print PASS before any upload.
 
   All of it was run end to end against the real kit data and **scored with the kit evaluators**. The test environment had no pretrained weights, so its model scores are meaningless; only the mechanics were verified. Extra dependency: `opencv-python`.
