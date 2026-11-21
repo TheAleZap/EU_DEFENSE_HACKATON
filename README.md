@@ -45,13 +45,14 @@ A low-power sensor node for spotting small drones. A small audio model listens a
 
 We also looked at Challenge 8 (edge video triage) and dropped it to stay focused.
 
-### Where we are (Sat 21 Nov, 15:30)
+### Where we are (Sat 21 Nov, 15:35)
 | Part | Status | Result (validation split, organisers' scorer) |
 |---|---|---|
 | Ch 6 detection | Submission file ready, passes our format checker | mAP@50 **0.595** against the kit reference 0.447; small-object AP@50 **0.734** against 0.506 (RF-DETR Nano, FP32, MacBook M4 Max) |
 | Ch 6 tracking | **Our tracker now beats the baseline** (v1 submission, checker passes) | MOTA **+0.247** against the kit reference −0.013; IDF1 **0.448** against 0.248; 3 ID switches. Default settings, not tuned on validation |
-| Ch 6 detection, bigger model | RF-DETR Small (512 px input) training on the M4 Max | Early epochs already match the 20-epoch Nano on the trainer's own validation; kit-scorer numbers when it finishes |
+| Ch 6 detection, bigger model | RF-DETR Small (512 px input). The first run ran the Mac out of memory (46 GB) and stalled; restarting at half the batch size | After 2 epochs it already matched the 20-epoch Nano on the trainer's own validation; kit-scorer numbers when it finishes |
 | Ch 9 | **New: AudioSet-pretrained audio model** (v2 candidate, checker passes) | Leave-one-clip-out over 56 clips: class accuracy **0.73** (kit-style model 0.30), wake F1 **0.53** (0.50), camera on 23% of the time. Wake and class never contradict |
+| Ch 9, extra data | **New (15:30): 89 extra labelled real-world clips** (60 min of audio, with video). See below | Training on it next |
 | Metis | **Blocked: no hardware access yet** | None |
 | Code | Full pipeline for every part; 15/15 tests pass on the real kit data | n/a |
 
@@ -61,10 +62,30 @@ Still hard: two validation sequences have drones only 7–10 pixels wide. Whole-
 
 Ch 9 finding: the AudioSet model often hears the "drone" clips as explosions, thunder or music. The drone is usually buried under louder sounds, which is why every model finds wake detection hard. The AudioSet model is an 86M-parameter transformer (114 ms per 5 s clip on the laptop CPU), much bigger than the kit's 3.6 MB CNN, and we haven't tried compiling it for Metis.
 
+### New Ch 9 data, and how the plan changes
+**What we got (Sat 15:30):** `audio_export`, 90 real-world clips, mostly social-media and combat footage: drones such as the Shahed passing overhead, FPV strikes, gunfire, artillery, vehicles, helicopters, speech. Each clip has a 16 kHz mono `audio.wav` and a `video.mp4`. 89 also have an AI-written `analysis.json` with a clip-level `has_drone_audio` flag: **38 clips with drone audio (23 min), 51 without (36 min)**. Clips run 5 s to 3.5 min (median 25 s). The kit's own docs say Ch 9 "needs more independent recordings", and this is exactly that.
+
+**What it is good for, and its limits:**
+- **Quantity:** about 700 five-second windows, against the kit's 56 labelled clips. That's far more training material.
+- **Hard negatives:** the 51 no-drone clips are full of the sounds our models confuse with drones: engines, explosions, gunfire, rotors.
+- **Labels are coarse and machine-written.** They say *whether* a clip contains drone audio, not *when*, and not the kit's 4 sound classes. A 5-second window from a "drone" clip may be just speech. So: **no-drone clips give clean negatives; drone clips give noisy positives.**
+- **Different recordings.** Phone audio with music and speech, while the kit's audio is "clean field microphone". The extra data could teach the wrong things, so we have to prove it helps on the kit's data.
+
+**How the plan changes:**
+1. **The extra data is used for training only, never for scoring.** Every Ch 9 number we report stays leave-one-clip-out on the kit's 56 labelled clips, with the extra clips added to the training side of each split. We keep the extra data only if it improves that number.
+2. **Wake detection gets the extra data; the 4-class sound label stays on kit data.** The extra labels only cover drone or not, so we train a drone/no-drone model on kit plus extra windows, and keep the 4-class model on kit clips. Combined rule: wake if the drone model says so, sound class = `drone_buzz` if wake, otherwise the best non-drone class. Wake and class still never contradict.
+3. **Two routes, run in parallel:**
+   - **AudioSet route (Alejandro's Mac, now):** add the extra windows to `audioset_probe.py`. Quick, and likely the best accuracy.
+   - **On-chip route (Viktoriia):** turn the extra windows into kit-style spectrogram PNGs and retrain the kit's small CNN. This is the model that compiles for Metis, so it's the one that turns accuracy into the edge story. It needs the kit's spectrogram settings reverse-engineered first, since they aren't documented.
+4. **Better demo material:** real drone footage with synchronised audio, ideal for showing "hear it, then look" in the pitch video.
+5. **New rules question:** are we allowed to train on this extra data? The kit data alone stays our fallback (v1 Ch 9 file).
+
+The data is about 1 GB, so it stays out of git, like the kits. Keep it at `~/edth/extra/audio_export` (or pass its path).
+
 ### Plan to Sunday
 | By | Goal |
 |---|---|
-| Sat 19:00 | ~~Our tracker beats the kit's MOTA on validation~~ (done 15:00). ~~Ch 9 beats its baseline~~ (done 15:30, pending the rules question below). RF-DETR Small scored. At least one model compiled on Metis. Cascade demo working on one clip. |
+| Sat 19:00 | ~~Our tracker beats the kit's MOTA on validation~~ (done 15:00). ~~Ch 9 beats its baseline~~ (done 15:30, pending the rules question below). Ch 9 extra data tested on both routes. RF-DETR Small scored. At least one model compiled on Metis. Cascade demo working on one real drone clip. |
 | Sun 11:00 | Final test predictions checked and submitted. |
 | Sun 12:00 | Feature freeze, demo video recorded, pitch rehearsals. |
 
@@ -83,13 +104,14 @@ Ch 9 finding: the AudioSet model often hears the "drone" clips as explosions, th
 8. Are the "proposed" judging weights in the kits final? What's the protocol for hardware measurements?
 9. How long is the pitch, and when is preselection?
 10. For Ch 9, may we use an audio model pretrained on a public dataset (AudioSet), the way the kit uses an ImageNet-pretrained CNN? And does a bigger model on Metis count against us if it still fits in 1 GB?
+11. May we train Ch 9 on extra real-world recordings beyond the kit (we evaluate only on kit data)?
 
 **Feedback we'd value:**
 
-11. Is "listen first, then look" the right story for the judges, or should we pitch Ch 6 on its own?
-12. Any advice on tracking drones only 7 pixels wide, when the detector also fires on fixed scenery?
+12. Is "listen first, then look" the right story for the judges, or should we pitch Ch 6 on its own?
+13. Any advice on tracking drones only 7 pixels wide, when the detector also fires on fixed scenery?
 
-## Team and current plan (updated Sat 21 Nov, 15:30)
+## Team and current plan (updated Sat 21 Nov, 15:35)
 
 | Role | Who | Branch | Work |
 |---|---|---|---|
@@ -103,17 +125,17 @@ Ch 9 finding: the AudioSet model often hears the "drone" clips as explosions, th
 ### Status
 | Challenge | Status | Still to do |
 |---|---|---|
-| 6, detection | v0 done: valid mAP@50 0.595, small_AP50 0.734 (20-epoch RF-DETR Nano, kit scorer). Tiled model scored: no gain, v0 kept. **RF-DETR Small (512 px) training now** on the M4 Max (`runs/c6_small20`) | When it finishes: export, score detection and tracking on valid, and keep it only if it wins |
+| 6, detection | v0 done: valid mAP@50 0.595, small_AP50 0.734 (20-epoch RF-DETR Nano, kit scorer). Tiled model scored: no gain, v0 kept. **RF-DETR Small (512 px)** restarting at batch 4 after the first run ran out of memory | When it finishes: export, score detection and tracking on valid, and keep it only if it wins |
 | 6, tracking | **v1 done** (`submissions/v1/`, checker PASS): valid MOTA **+0.247**, IDF1 **0.448**, 3 ID switches (kit scorer). Whole-frame detections + `track.py` defaults | Tuned settings reach +0.283 in-sample, but leave-one-out says the tuning doesn't generalise, so defaults ship. Tiny-drone hybrid tested (+0.314) but too fragile to ship |
-| 9, acoustic wake | v0 = kit baseline. **v2 candidate** (`submissions/v2/c9_test.jsonl`, checker PASS, no contradictions): AudioSet model + logistic regression, `ch9_acoustic_wake/audioset_probe.py`. Leave-one-clip-out on 56 clips: wake F1 0.533, class acc 0.732, camera on 0.23 | Confirm with organisers that a pretrained audio model is allowed. Metis compile of the AudioSet model is untested |
+| 9, acoustic wake | v0 = kit baseline. **v2 candidate** (`submissions/v2/c9_test.jsonl`, checker PASS, no contradictions): AudioSet model + logistic regression, `ch9_acoustic_wake/audioset_probe.py`. Leave-one-clip-out on 56 clips: wake F1 0.533, class acc 0.732, camera on 0.23 | **Extra data (89 clips) being added** on the Mac. Confirm with organisers that a pretrained audio model and extra data are allowed. Metis compile of the AudioSet model is untested |
 | Axelera chip | **Hardware not available yet** | Prepare so compile can run the moment it arrives |
 | Pitch and demo | Mentor summary written (see "Project summary" above) | Slides, story, demo video |
 
 ### What each person does now
-- **Alejandro (P1):** RF-DETR Small is training on the Mac. When it finishes, export it, score detection on valid with the kit scorer, then rerun the v1 tracking recipe with it. Keep it only if both improve. Don't run other heavy jobs meanwhile: it slows training a lot.
-- **Salo (P2):** pull `main` before committing to `p2-track`: `track.py` gained `--merge`, `tune_tracker.py` gained the merge option and a pooled score, and `detect_video.py` gained `--mode whole`. **Use `--mode whole` from now on**, not `--mode full`. Next: per-sequence error analysis for the pitch (where the tracker loses points), and `--online` numbers for an honest real-time demo.
-- **Viktoriia (P3):** a stronger Ch 9 model now exists: `ch9_acoustic_wake/audioset_probe.py` (AudioSet-pretrained audio model + logistic regression; class accuracy 0.73 against 0.30–0.43 for the CNNs, leave-one-clip-out). Please (1) rerun it on your machine to confirm the numbers (it needs `scikit-learn` and `transformers`), (2) try distilling it into the kit's small CNN so the on-chip model gets the same gain, and (3) prepare the camera-off and wake numbers for the pitch.
-- **Dana (P4):** finish WSL2; find out when the Axelera hardware arrives, the deadlines and the pitch format, and write them into Section 0 of the team brief. Record CPU speed numbers labelled "CPU, not Metis". Start the slides. Run `check_submissions_before_upload.py` on the combined Challenge 6 + 9 files.
+- **Alejandro (P1), on the Mac:** (1) Ch 9 AudioSet route with the extra data (see "New Ch 9 data" above). (2) RF-DETR Small restart (batch 4); when it finishes, export it, score detection and tracking on valid with the kit scorers, and keep it only if both improve. Watch memory: the first run stalled at 46 GB.
+- **Salo (P2):** pull `main` first, and use `detect_video.py --mode whole` from now on. New tasks: (1) **demo clip**: pick 2–3 `audio_export` videos where a drone is visible (the Shahed clips, e.g. `787248`), run the v1 detector and tracker on them, and render the boxes and track IDs into a video; ask Alejandro for the data and model by AirDrop. (2) Per-sequence error analysis of v1 for the pitch: where the points are lost. (3) `track.py --online` numbers for an honest real-time demo.
+- **Viktoriia (P3):** own the **on-chip Ch 9 route**. (1) Reverse-engineer the kit's spectrogram settings: compute log-mel spectrograms of the kit's own wavs until they match its PNGs (try 16 kHz, 64 or 128 mel bands, a few FFT and hop sizes, resized to 224×224, and compare pixel by pixel). (2) Use the same code to make PNGs for 5-second windows of the `audio_export` clips. (3) Retrain the kit CNN (`train_cv.py`) with the extra windows added to the training side only, and compare leave-one-clip-out on the kit's 56 clips against your current ~0.49 wake F1. That model can go on the chip. Use Alejandro's Mac if your laptop is slow.
+- **Dana (P4):** (1) ask the organisers the two new rules questions: AudioSet-pretrained model, and training on extra recordings (questions 10–11 above). (2) Metis: compile the kit's Ch 9 CNN first as soon as hardware appears. (3) Pitch: the new real-drone clips (with sound) are the demo material; build the "hear it, then look" storyboard around one of them with Salo. (4) Keep running `check_submissions_before_upload.py` on each new submission folder.
 
 ### Hardware hold
 Nobody waits for the Axelera hardware. Training, scoring and submission files all run on laptops. Only Metis compile and on-chip speed measurements are blocked. Cut line 14:00: if the chip isn't working, report CPU ONNX Runtime numbers, clearly labelled.
