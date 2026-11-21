@@ -93,6 +93,7 @@ We're a team of **4** at the **European Defence Tech Hackathon (EDTH) Paris, 20�
 9. **Code kit built (11:38–11:50)** and **full test suite run (12:05): 15/15 PASS.** The suite found that motion windows cover the 7 px drone in seq 4 only 19% of the time. **Decision:** default raised from 6 to 12 windows; **use FULL mode for scored submissions**, motion mode for the efficiency story.
 10. **Working method:** GitHub repo `TheAleZap/EU_DEFENSE_HACKATON` (see `README.md` "Team workflow"). Branches `p1-detect`, `p2-track`, `p3-audio-triage`, `p4-metis-pitch`.
 11. **Names and scope (Sat 13:55, team lead):** P1 Alejandro, P2 Salo, P3 Viktoriia, P4 Dana. **Ch 8 dropped as a submission**: P3 does Ch 9 only; Ch 8 code stays in the repo as pitch material ("send" step of the story). Axelera hardware not yet available: nobody waits for it; only Metis compile/benchmarks are blocked.
+12. **Sat 13:45, P2 (Salome): tracker tuning helper.** `ch6_detection_tracking/tune_tracker.py` (the team lead's version) runs `track.py`'s functions over a grid of settings (648 combos, or 8 with `--quick`), scores each valid sequence alone with the **kit's** `evaluate_mot_tracking` (one temp GT folder per sequence), and reports leave-one-sequence-out held-out numbers (objective MOTA + IDF1). The settings best on all 4 valid sequences are used for test seq 5–8. Held-out numbers are per-sequence means, not the kit's pooled valid score. Not yet run against the real kit; no real score yet. Ch 6 v0 MOT files already exist from P1 (`submissions/v0/`), so P2 doesn't redo v0.
 
 ---
 
@@ -196,6 +197,7 @@ Exact commands are in `README.md`. Extra dependency: `opencv-python`.
 | Same model, kit MOT predictor | valid MOTA −0.215, IDF1 0.157 | [verified, kit scorer] |
 | Ch 6 RF-DETR Nano trained on tiles, 20 ep (Sat 14:12) | untiled inference: valid mAP50 0.594, mAP50_95 0.410, small_AP50 0.631; tiled inference: mAP50 0.479, small_AP50 0.665. **No clear win over the untiled baseline; v0 kept.** Tiled inference loses ~0.12 mAP50 with both models: suspect tile merging | [verified, kit scorer] |
 | Ch 6 v0 submission (Sat 13:20) | `submissions/v0/` COCO test + MOT seq 5–8 from the 20-epoch model; check_submissions PASS | [test] |
+| Ch 6 track.py on 20-ep model, full-mode detections, P2 MacBook CPU ORT FP32 (Sat 14:52) | defaults: MOTA −0.889, IDF1 0.250. Tuned (in-sample): MOTA −0.318, IDF1 0.410, 0 ID switches. LOO held-out mean: MOTA −0.50 (quick grid) / −0.76 (full grid). seq_0004 (7 px drone) is the main loss; seq_0003 never matched | [verified, kit scorer] |
 | Ch 6 tiled dataset build (Sat 12:35) | train 3266 imgs / 2544 boxes, valid 1590 / 1182, 5 s; matches test counts | [test] |
 
 ---
