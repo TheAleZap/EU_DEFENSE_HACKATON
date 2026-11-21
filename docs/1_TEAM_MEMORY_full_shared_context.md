@@ -20,12 +20,12 @@ We're a team of **4** at the **European Defence Tech Hackathon (EDTH) Paris, 20â
 
 ## 2. Team, hardware, roles
 
-| Role | Person's machine | Owns |
-|---|---|---|
-| **P1** | **MacBook Pro 16" M4 Max, 48 GB** (the only fast machine; Apple GPU = MPS, not CUDA) | Ch 6 detection: RF-DETR Nano training on tiles, tiled inference, COCO output |
-| **P2** | laptop | Ch 6 tracking: `detect_video.py` + `track.py`, MOT output |
-| **P3** | laptop | Ch 9 (first) then Ch 8: `train_cv.py`, `predict_consistent.py`, `train_rank.py`, `pool_clips.py` |
-| **P4** | **the team's one Windows laptop** (WSL2 + Ubuntu 22.04) | Axelera/Metis compile and benchmarks, integration, submission checks, demo video, pitch |
+| Role | Person | Person's machine | Owns |
+|---|---|---|---|
+| **P1** | **Alejandro** (team lead, GitHub owner) | **MacBook Pro 16" M4 Max, 48 GB** (the only fast machine; Apple GPU = MPS, not CUDA) | Ch 6 detection: RF-DETR Nano training on tiles, tiled inference, COCO output |
+| **P2** | **Salo** | laptop | Ch 6 tracking: `detect_video.py` + `track.py`, MOT output |
+| **P3** | **Viktoriia** | laptop | Ch 9 only: `train_cv.py`, `predict_consistent.py` (Ch 8 dropped Sat 13:55) |
+| **P4** | **Dana** | **the team's one Windows laptop** (WSL2 + Ubuntu 22.04) | Axelera/Metis compile and benchmarks, integration, submission checks, demo video, pitch |
 
 **Hardware facts [verified]:**
 - The **Voyager SDK installs on Linux (Ubuntu 22.04+); Windows only via WSL2; macOS isn't listed.** No Mac can compile for Metis. Compile on the Axelera host in the Spectrum Room, or on P4's WSL2 if the compiler-only install works without a card [unconfirmed].
@@ -91,7 +91,8 @@ We're a team of **4** at the **European Defence Tech Hackathon (EDTH) Paris, 20â
 7. **Scope review (Sat 11:00):** a teammate's Claude said the plan was too broad. Resolved by priority ranking: **Ch 6 (2 people) > Ch 9 > Ch 8**, Ch 8 limited to clip pooling + ranking loss + Metis benchmark.
 8. **Hardware decided (11:03â€“11:12):** M4 Max = P1; Windows = P4 (WSL2); questions to ask the Axelera team listed.
 9. **Code kit built (11:38â€“11:50)** and **full test suite run (12:05): 15/15 PASS.** The suite found that motion windows cover the 7 px drone in seq 4 only 19% of the time. **Decision:** default raised from 6 to 12 windows; **use FULL mode for scored submissions**, motion mode for the efficiency story.
-10. **Working method:** private GitHub repo (see `README.md` "Team workflow").
+10. **Working method:** GitHub repo `TheAleZap/EU_DEFENSE_HACKATON` (see `README.md` "Team workflow"). Branches `p1-detect`, `p2-track`, `p3-audio-triage`, `p4-metis-pitch`.
+11. **Names and scope (Sat 13:55, team lead):** P1 Alejandro, P2 Salo, P3 Viktoriia, P4 Dana. **Ch 8 dropped as a submission**: P3 does Ch 9 only; Ch 8 code stays in the repo as pitch material ("send" step of the story). Axelera hardware not yet available: nobody waits for it; only Metis compile/benchmarks are blocked.
 
 ---
 
