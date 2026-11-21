@@ -2,6 +2,87 @@
 
 **Start here:** `00_START_HERE.md`. Then `docs/1_TEAM_MEMORY_full_shared_context.md` (full shared context), `docs/2_TEAM_BRIEF_plan_roles_checkpoints.md` (plan and roles), `docs/3_TEST_REPORT_results_and_coverage.md` (15/15 tests + coverage matrix).
 
+## Project summary (for mentors and organisers)
+
+**Siesta: eyes closed, ears open.** A team of 4 on the Axelera track (Piotr Gryko), entering **Challenge 6** and **Challenge 9**.
+
+### Our idea
+On 3 February 2020, Madrid-Barajas airport closed for about two hours because pilots reported a drone. 26 flights were rerouted, and afterwards nobody could prove the drone had ever been there. The hard part wasn't stopping a drone. It was answering one question fast and with evidence: *is there really a drone, and where is it?*
+
+Small drones are hard to answer that question about. In the challenge data a drone can be just 7 pixels wide in a full-HD frame. Finding something that small means running cameras and AI nonstop, which costs power, bandwidth and an operator's attention, and almost all of that watching finds nothing.
+
+Our idea is to stop staring and start listening. **Siesta** is built from two of the Axelera challenges, joined into one sensor node:
+
+- **Challenge 9 gives it ears.** A small audio model listens to the sky all the time. As long as it hears nothing like a drone, the camera stays asleep. That's the "siesta".
+- **Challenge 6 gives it eyes.** When the audio model hears rotors, the camera wakes up. A detector finds the tiny aircraft and a tracker follows each one with a stable ID. The node only reports tracks it's confident about, because a wrong alarm is worse than staying quiet.
+
+Both run on one small Axelera Metis chip at the edge, so the node can live on a mast or a rooftop and send only a few bytes per track. It doesn't stream video. The operator gets a clear answer: *drone confirmed, here's the track*, or *nothing there, reopen the runway*.
+
+We didn't invent the "listen, then look" pairing. The Challenge 9 kit itself suggests handing audio detections to the Challenge 6 detector, and 9 of its training clips have a drone you can hear but can't see. What we add is making the two halves work as one system, tuning each part to how it's actually scored, and measuring what it costs on the real chip.
+
+**Where it could go next:** confirmed tracks could feed a command-and-control map or a drone fleet planner (Challenge 4). A third step could send only the most important frames over a weak radio link (Challenge 8, which we parked to stay focused). The same node would fit airports, prisons and power plants. It detects and confirms; a human decides what happens next.
+
+### How it works
+A low-power sensor node for spotting small drones. A small audio model listens all the time while the camera stays off. When it hears rotors, it wakes the camera. An RF-DETR detector then finds aircraft as small as 7 pixels in full-HD video, and a tracker follows each one with a stable ID. Only short track messages leave the node, never a video stream. The goal is to run both models on a single Axelera Metis chip.
+
+```
+ mic, always on ──► [ audio wake model · Metis ] ── no drone ──► camera stays off
+                                │
+                           drone heard
+                                ▼
+ camera wakes ──► [ RF-DETR detector · Metis ] ──► [ tracker: confirmed tracks, one ID each ]
+                                                                │
+                                                                ▼
+                                                 track message ──► operator / map
+```
+
+### What we're entering
+| Challenge | What it asks | Our approach | Who |
+|---|---|---|---|
+| **6. Small aircraft detection and tracking** (priority 1) | Detections (COCO) and tracks (MOT) for tiny drones, airplanes and helicopters; efficiency on Metis | Properly trained RF-DETR Nano, plus a tracker built around the scorer: report only confirmed tracks and fill short gaps | Alejandro (detection), Salo (tracking) |
+| **9. Acoustic-to-visual drone detection** (priority 2) | Per 5-second clip: wake the camera or not, plus a sound class; camera-off time | Audio augmentation, a wake threshold chosen by cross-validation, wake and class always consistent, then a demo that hands off to the Ch 6 detector | Viktoriia |
+| **Metis, integration, demo** | Compile and benchmark on the chip; the cascade demo | Compile the audio model first, then the detector backbone with the decoder on the host | Dana |
+
+We also looked at Challenge 8 (edge video triage) and dropped it to stay focused.
+
+### Where we are (Sat 21 Nov, 14:30)
+| Part | Status | Result (validation split, organisers' scorer) |
+|---|---|---|
+| Ch 6 detection | Submission file ready, passes our format checker | mAP@50 **0.595** against the kit reference 0.447; small-object AP@50 **0.734** against 0.506 (RF-DETR Nano, FP32, MacBook M4 Max) |
+| Ch 6 tracking | Only the kit's tracker so far; ours is being tuned on real detections | MOTA −0.21 against the kit reference −0.013. **This is our main gap.** |
+| Ch 9 | Training starting | No result yet |
+| Metis | **Blocked: no hardware access yet** | None |
+| Code | Full pipeline for every part; 15/15 tests pass on the real kit data | n/a |
+
+Tried and rejected: training and inferring on native-resolution tiles to help with tiny drones. It gave no gain on validation, so we kept the simpler model.
+
+### Plan to Sunday
+| By | Goal |
+|---|---|
+| Sat 19:00 | Our tracker beats the kit's MOTA on validation, tuned leave-one-sequence-out. Ch 9 model trained. At least one model compiled on Metis. Cascade demo working on one clip. |
+| Sun 11:00 | Final test predictions checked and submitted. |
+| Sun 12:00 | Feature freeze, demo video recorded, pitch rehearsals. |
+
+### What we need from you
+**Hardware (most urgent):**
+1. Access to an Axelera Metis / Embedded 110m: when, where (Spectrum Room?), and how do we book time?
+2. The host machine: which OS, CPU and Voyager SDK version? Can we SSH in and run our own Python? We need to time the host-side decoder and tracker on it.
+3. Can the compiler (`axcompile`) run without a card, for example on a Linux laptop or WSL2? Then we could compile before we get device time.
+4. Is there any way to measure power on the board?
+5. Has anyone compiled RF-DETR (it uses deformable attention) for Metis? Is there a known recipe? Our plan is the backbone on the chip and the decoder on the host.
+
+**Rules and logistics:**
+
+6. Can one team submit to Ch 6 and Ch 9 and pitch them as one project?
+7. What are the deadlines, and how do we upload test predictions?
+8. Are the "proposed" judging weights in the kits final? What's the protocol for hardware measurements?
+9. How long is the pitch, and when is preselection?
+
+**Feedback we'd value:**
+
+10. Is "listen first, then look" the right story for the judges, or should we pitch Ch 6 on its own?
+11. Any advice on tracking drones only 7 pixels wide?
+
 ## Team and current plan (updated Sat 21 Nov, 13:55)
 
 | Role | Who | Branch | Work |
@@ -20,7 +101,7 @@
 | 6, tracking | v0 is only the kit's tracker: valid MOTA −0.21, IDF1 0.16 | Our `track.py`, tuned leave-one-sequence-out |
 | 9, acoustic wake | Nothing yet | Kit baseline as v0, then `train_cv.py` |
 | Axelera chip | **Hardware not available yet** | Prepare so compile can run the moment it arrives |
-| Pitch and demo | Not started | Slides, story, demo video |
+| Pitch and demo | Mentor summary written (see "Project summary" above) | Slides, story, demo video |
 
 ### What each person does now
 - **Alejandro (P1):** score the tiled model when training finishes (~14:15) on the original valid images, with and without tiles; make v1 from the best; AirDrop the best model to Salo. The Mac is free for Viktoriia's training if her laptop is slow.
