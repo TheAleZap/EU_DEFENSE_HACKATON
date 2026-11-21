@@ -107,10 +107,11 @@ def main() -> None:
     ap.add_argument("--sweep-every", type=int, default=15, help="motion mode: full sweep period (frames)")
     ap.add_argument("--keep-thr", type=float, default=0.05, help="drop detections below this score")
     ap.add_argument("--carry-thr", type=float, default=0.3, help="re-look around detections above this")
+    ap.add_argument("--img-size", type=int, default=384, help="model input size (Nano 384, Small 512)")
     args = ap.parse_args()
 
     kit = load_kit(args.kit / "starter-kit")
-    det = Detector(args.onnx, kit)
+    det = Detector(args.onnx, kit, img_size=args.img_size)
     root = args.kit / "tracking_eval"
     seqs = args.seqs or sorted(p.name for p in root.glob("seq_*") if (p / "video.mp4").exists())
     result, stats = {}, {}
