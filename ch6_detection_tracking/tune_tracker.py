@@ -77,10 +77,11 @@ def main() -> None:
         "min_len": [3, 8],
         "max_gap": [4, 8, 15],
         "gate": [2.0, 3.0, 5.0],
+        "merge": ["none", "max", "sum"],
     }
     if args.quick:
         grid = {"high_thr": [0.4, 0.6], "confirm_score": [0.3, 0.5], "min_hits": [2, 4], "min_len": [5],
-                "max_gap": [8], "gate": [3.0]}
+                "max_gap": [8], "gate": [3.0], "merge": ["none", "sum"]}
     fixed = {"low_thr": 0.1, "emit_thr": 0.1, "max_miss": 10, "online": False}
     keys = list(grid)
     combos = [dict(zip(keys, v)) for v in itertools.product(*grid.values())]
@@ -123,6 +124,15 @@ def main() -> None:
     for s in VALID:
         m = best_per[s]
         print(f"  {s}: MOTA {m['MOTA']:+.3f} IDF1 {m['IDF1']:.3f} continuity {m['track_continuity']:.3f}")
+    with tempfile.TemporaryDirectory() as td:
+        pd = Path(td)
+        a = SimpleNamespace(**best_p, **fixed)
+        for seq in VALID:
+            lines = track.emit(track.run_sequence(data[seq], a, cams.get(seq) if cams else None), a)
+            (pd / f"{seq}.txt").write_text("\n".join(lines) + ("\n" if lines else ""))
+        m = scorer.evaluate_mot_tracking(args.kit / "tracking_eval", pd, split="valid")
+        print(f"  POOLED (kit scorer, all 4 together, in-sample): MOTA {m['MOTA']:+.3f} IDF1 {m['IDF1']:.3f} "
+              f"continuity {m['track_continuity']:.3f}")
     flags = " ".join(f"--{k.replace('_', '-')} {v}" for k, v in best_p.items())
     cam = "" if args.no_cam else f" --kit {args.kit}"
     print(f"\nCommand:\n  python ch6_detection_tracking/track.py --dets {args.dets} --out-dir pred_mot{cam} {flags}")

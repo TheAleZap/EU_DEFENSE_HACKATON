@@ -1,7 +1,9 @@
 """Siesta Ch 6: per-frame detections on the tracking sequences (input for track.py).
 
 Modes
-  full   : every native tile + whole-frame pass on every frame (accurate, expensive)
+  whole  : one whole-frame pass per frame, the same detection the kit's MOT baseline uses (1 call/frame).
+           With the 20-epoch untiled model this scores higher on valid than tiled detection.
+  full   : every native tile + whole-frame pass on every frame (expensive)
   motion : "peek before you stare" (idea B). For the EFFICIENCY story; use FULL mode for the scored submission
            unless motion mode scores as well on valid (tested coverage: seq 2: 97%, seq 3: 95%, seq 4: only 19% with 12 windows). Detector runs only on native windows around
            (a) the strongest camera-motion-compensated motion candidates,
@@ -98,7 +100,7 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--kit", type=Path, required=True)
     ap.add_argument("--onnx", type=Path, required=True)
-    ap.add_argument("--mode", choices=["full", "motion"], default="motion")
+    ap.add_argument("--mode", choices=["whole", "full", "motion"], default="motion")
     ap.add_argument("--seqs", nargs="*", default=None, help="default: all seq_* in tracking_eval")
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--max-windows", type=int, default=12, help="motion mode: motion windows per frame (tested: 6 is too few for 7 px drones)")
@@ -120,7 +122,9 @@ def main() -> None:
         per_frame, prev_conf = {}, []
         for t, f in enumerate(frames):
             pil = Image.fromarray(cv2.cvtColor(f, cv2.COLOR_BGR2RGB))
-            if args.mode == "full" or t % args.sweep_every == 0:
+            if args.mode == "whole":
+                dets = classwise_nms(det.run(pil, top_k=30))
+            elif args.mode == "full" or t % args.sweep_every == 0:
                 dets = detect_tiled(det, pil)
             else:
                 pts = []

@@ -101,12 +101,33 @@ def camera_motion(kit_dir: Path, seq: str):
     return {t + 1: _align(grays[t - 1], grays[t]) for t in range(1, len(grays))}
 
 
+def merge_classes(dets, mode, iou_thr=0.5):
+    """Class-agnostic NMS. RF-DETR often returns one box several times with different classes;
+    the MOT scorer ignores class, so each copy would be a false positive.
+    mode 'max' keeps the best copy's score, 'sum' adds the copies' scores (capped at 1)."""
+    if mode == "none":
+        return dets
+    from tiling import iou_xywh
+    kept = []
+    for d in sorted(dets, key=lambda d: -d[1]):
+        for i, k in enumerate(kept):
+            if iou_xywh(d[2], k[2]) >= iou_thr:
+                if mode == "sum":
+                    kept[i] = (k[0], min(1.0, k[1] + d[1]), k[2])
+                break
+        else:
+            kept.append(d)
+    return kept
+
+
 def run_sequence(per_frame, args, cams=None):
     Track._next = 1
     active, finished = [], []
     frames = sorted(int(f) for f in per_frame)
+    merge = getattr(args, "merge", "none")
     for f in frames:
-        dets = [(d[0], d[1], d[2:6]) for d in per_frame[str(f)] if d[1] >= args.low_thr]
+        dets = merge_classes([(d[0], d[1], d[2:6]) for d in per_frame[str(f)]], merge)
+        dets = [d for d in dets if d[1] >= args.low_thr]
         high = [d for d in dets if d[1] >= args.high_thr]
         low = [d for d in dets if d[1] < args.high_thr]
         matches, unmatched_high = associate(active, high, f, args.gate, cams)
@@ -178,6 +199,8 @@ def main() -> None:
     ap.add_argument("--max-gap", type=int, default=8)
     ap.add_argument("--gate", type=float, default=3.0, help="max centre distance in box-size units")
     ap.add_argument("--online", action="store_true")
+    ap.add_argument("--merge", choices=["none", "max", "sum"], default="none",
+                    help="class-agnostic merge of same-box detections before tracking")
     args = ap.parse_args()
 
     data = json.loads(args.dets.read_text(encoding="utf-8"))
