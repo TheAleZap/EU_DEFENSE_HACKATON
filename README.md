@@ -49,17 +49,19 @@ We also looked at Challenge 8 (edge video triage) and dropped it to stay focused
 | Part | Status | Result (validation split, organisers' scorer) |
 |---|---|---|
 | Ch 6 detection | Submission file ready, passes our format checker | mAP@50 **0.595** against the kit reference 0.447; small-object AP@50 **0.734** against 0.506 (RF-DETR Nano, FP32, MacBook M4 Max) |
-| Ch 6 tracking | Only the kit's tracker so far; ours is being tuned on real detections | MOTA −0.21 against the kit reference −0.013. **This is our main gap.** |
-| Ch 9 | Training starting | No result yet |
+| Ch 6 tracking | **Our tracker now beats the baseline** (v1 submission, checker passes) | MOTA **+0.247** against the kit reference −0.013; IDF1 **0.448** against 0.248; 3 ID switches. Default settings, not tuned on validation |
+| Ch 9 | Kit baseline submitted (v0). Our cross-validated model isn't better yet | Wake F1 0.80 on 8 validation clips (kit baseline). Our honest cross-validated estimate over 56 clips is about 0.49 |
 | Metis | **Blocked: no hardware access yet** | None |
 | Code | Full pipeline for every part; 15/15 tests pass on the real kit data | n/a |
 
-Tried and rejected: training and inferring on native-resolution tiles to help with tiny drones. It gave no gain on validation, so we kept the simpler model.
+Tried and rejected: training and inferring on native-resolution tiles to help with tiny drones. It gave no gain on validation, so we kept the simpler model. Running the tracker on tiled detections was also why our first tracker scored worse than the kit's (MOTA −0.32). Switching to one whole-frame pass per frame fixed it, and it's 25 times cheaper.
+
+Still hard: two validation sequences have drones only 7–10 pixels wide. The detector never finds the 10 px one, and its boxes on the 7 px one rarely overlap the truth by the 50% the scorer needs. For both, the tracker currently reports nothing rather than false alarms.
 
 ### Plan to Sunday
 | By | Goal |
 |---|---|
-| Sat 19:00 | Our tracker beats the kit's MOTA on validation, tuned leave-one-sequence-out. Ch 9 model trained. At least one model compiled on Metis. Cascade demo working on one clip. |
+| Sat 19:00 | ~~Our tracker beats the kit's MOTA on validation~~ (done 15:00). Ch 9 beats its baseline. At least one model compiled on Metis. Cascade demo working on one clip. |
 | Sun 11:00 | Final test predictions checked and submitted. |
 | Sun 12:00 | Feature freeze, demo video recorded, pitch rehearsals. |
 
@@ -83,7 +85,7 @@ Tried and rejected: training and inferring on native-resolution tiles to help wi
 10. Is "listen first, then look" the right story for the judges, or should we pitch Ch 6 on its own?
 11. Any advice on tracking drones only 7 pixels wide?
 
-## Team and current plan (updated Sat 21 Nov, 13:55)
+## Team and current plan (updated Sat 21 Nov, 15:00)
 
 | Role | Who | Branch | Work |
 |---|---|---|---|
@@ -97,16 +99,16 @@ Tried and rejected: training and inferring on native-resolution tiles to help wi
 ### Status
 | Challenge | Status | Still to do |
 |---|---|---|
-| 6, detection | v0 done: valid mAP@50 0.595, small_AP50 0.734 (20-epoch RF-DETR Nano, kit scorer) | Score the tiled-trained model, make v1 |
-| 6, tracking | v0 is only the kit's tracker: valid MOTA −0.21, IDF1 0.16 | Our `track.py`, tuned leave-one-sequence-out |
-| 9, acoustic wake | Nothing yet | Kit baseline as v0, then `train_cv.py` |
+| 6, detection | v0 done: valid mAP@50 0.595, small_AP50 0.734 (20-epoch RF-DETR Nano, kit scorer). Tiled model scored: no gain, v0 kept | Optional: help the tiny drones (seq 3/4) without hurting the rest |
+| 6, tracking | **v1 done** (`submissions/v1/`, checker PASS): valid MOTA **+0.247**, IDF1 **0.448**, 3 ID switches (kit scorer). Whole-frame detections + `track.py` defaults | Tuned settings reach +0.283 in-sample, but leave-one-out says the tuning doesn't generalise, so defaults ship |
+| 9, acoustic wake | v0 = kit baseline (valid wake F1 0.80, class acc 0.375). Cross-validated model: F1 ~0.49, overconfident on test, not submitted | Beat the baseline honestly; 4/6 test clips still have wake and class disagreeing |
 | Axelera chip | **Hardware not available yet** | Prepare so compile can run the moment it arrives |
 | Pitch and demo | Mentor summary written (see "Project summary" above) | Slides, story, demo video |
 
 ### What each person does now
-- **Alejandro (P1):** score the tiled model when training finishes (~14:15) on the original valid images, with and without tiles; make v1 from the best; AirDrop the best model to Salo. The Mac is free for Viktoriia's training if her laptop is slow.
-- **Salo (P2):** with the 20-epoch model (`exports/c6_base20/full/inference_model.onnx`, from Alejandro by AirDrop) run `detect_video.py --mode full`, then `track.py --kit`, then the kit's MOT scorer. Beat MOTA −0.21 on valid. Tune leave-one-sequence-out (tune on 3 valid sequences, test on the 4th, rotate). Write test MOT files for seq_0005–0008.
-- **Viktoriia (P3):** Challenge 9 kit baseline today (that's v0). Then `train_cv.py` (check the log shows pretrained weights loading, otherwise it always says "wake"), then `predict_consistent.py` for the test file.
+- **Alejandro (P1):** tracker v1 finished on the Mac (whole-frame detections take 33 s for all 8 sequences, against 40 min tiled on a laptop). The Mac is free for Viktoriia's Ch 9 runs. Optional: see whether the tiny drones in seq 3/4 can be found without adding false alarms elsewhere.
+- **Salo (P2):** pull `main` before committing to `p2-track`: `track.py` gained `--merge`, `tune_tracker.py` gained the merge option and a pooled score, and `detect_video.py` gained `--mode whole`. **Use `--mode whole` from now on**, not `--mode full`. Next: per-sequence error analysis for the pitch (where the tracker loses points), and `--online` numbers for an honest real-time demo.
+- **Viktoriia (P3):** Ch 9 v0 is the kit baseline. Next, beat it honestly: (1) apply the consistency rule to the kit baseline's own outputs, since 4 of the 6 test clips currently disagree between wake and class; (2) fix the overconfident all-data model (for example fewer epochs, or calibrate the threshold from the out-of-fold predictions). Only submit what beats the baseline under cross-validation. Use Alejandro's Mac if training is slow.
 - **Dana (P4):** finish WSL2; find out when the Axelera hardware arrives, the deadlines and the pitch format, and write them into Section 0 of the team brief. Record CPU speed numbers labelled "CPU, not Metis". Start the slides. Run `check_submissions_before_upload.py` on the combined Challenge 6 + 9 files.
 
 ### Hardware hold
@@ -157,17 +159,19 @@ python ch6_detection_tracking/tiled_detect.py --kit $C6 --onnx .../inference_mod
 **Compare against the kit's untiled prediction of the same model.** Keep tiling only if mAP / small_AP improve on valid.
 
 ## Ch 6, tracking (P2)
+**v1 recipe (valid MOTA +0.247, IDF1 0.448, kit scorer; 33 s for all 8 sequences on the M4 Max):**
 ```bash
-# 1. Per-frame detections on all 8 sequences. Use FULL for scored files; MOTION ("peek before you stare", idea B)
-#    for the efficiency story (tested: motion windows cover the 7 px drone in seq 4 only 19% of frames)
-python ch6_detection_tracking/detect_video.py --kit $C6 --onnx .../inference_model.onnx --mode motion --out dets_motion.json
-python ch6_detection_tracking/detect_video.py --kit $C6 --onnx .../inference_model.onnx --mode full   --out dets_full.json
-#    prints model calls per frame (tested: full 13.3 avg / motion 6.9 avg over 8 sequences, about 48% fewer)
-# 2. Track + scorer-aware output policy (idea C); --kit enables camera-motion compensation
-python ch6_detection_tracking/track.py --dets dets_motion.json --out-dir pred_mot --kit $C6
+python ch6_detection_tracking/detect_video.py --kit $C6 --onnx $C6/starter-kit/exports/c6_base20/full/inference_model.onnx --mode whole --out dets_whole.json
+python ch6_detection_tracking/track.py --dets dets_whole.json --out-dir pred_mot --kit $C6        # default settings
 python $C6/starter-kit/evaluate_submissions.py mot --gt-dir $C6/tracking_eval --pred-dir pred_mot --split valid
 ```
-Tune `--high-thr --confirm-score --min-hits --min-len --max-gap --gate` with **leave-one-sequence-out** over seq_0001–0004.
+Use `--mode whole` (one whole-frame pass, like the kit's baseline) for scored files. With the 20-epoch model, tiled `--mode full` detections score far worse (MOTA −0.32 after tuning) and cost 25 calls per frame. `--mode motion` is only for the efficiency story (motion windows cover the 7 px drone in seq 4 only 19% of frames). `track.py --merge sum|max` merges the same box reported under several classes; it helps when settings are tuned, but not at the defaults.
+Tune `--high-thr --confirm-score --min-hits --min-len --max-gap --gate` with **leave-one-sequence-out** over seq_0001–0004:
+```bash
+# grid over track.py settings, scored by the kit MOT scorer; prints HELD-OUT per-sequence numbers (report these)
+python ch6_detection_tracking/tune_tracker.py --dets dets_whole.json --kit $C6        # --quick for a small grid, --no-cam to skip camera compensation
+#    ends by printing the track.py command with the settings that are best on all 4 valid sequences (use it for test seq 5-8)
+```
 `ch6_detection_tracking/synth_test.py` is the mechanics test (synthetic detections from GT, **not a real score**): policy OFF gives MOTA about −0.85 / IDF1 0.37; policy ON gives MOTA +0.49 to +0.61 / IDF1 0.72 to 0.80.
 `track.py` writes files for all sequences in the detections JSON, including test seq_0005–0008.
 
