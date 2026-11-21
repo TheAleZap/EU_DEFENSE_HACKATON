@@ -194,6 +194,7 @@ Exact commands are in `README.md`. Extra dependency: `opencv-python`.
 | Ch 6 RF-DETR Nano, kit baseline 20 ep (early stop at 16), untiled, M4 Max MPS (Sat 12:52) | 16 min; valid mAP50 0.595, mAP50_95 0.392, small_AP50 0.734 | [verified, kit scorer] |
 | Same model, tiled inference (tiled_detect.py) | valid mAP50 0.464, small_AP50 0.691, 13.9 calls/img: worse than untiled | [verified, kit scorer] |
 | Same model, kit MOT predictor | valid MOTA −0.215, IDF1 0.157 | [verified, kit scorer] |
+| Ch 6 RF-DETR Nano trained on tiles, 20 ep (Sat 14:12) | untiled inference: valid mAP50 0.594, mAP50_95 0.410, small_AP50 0.631; tiled inference: mAP50 0.479, small_AP50 0.665. **No clear win over the untiled baseline; v0 kept.** Tiled inference loses ~0.12 mAP50 with both models: suspect tile merging | [verified, kit scorer] |
 | Ch 6 v0 submission (Sat 13:20) | `submissions/v0/` COCO test + MOT seq 5–8 from the 20-epoch model; check_submissions PASS | [test] |
 | Ch 6 tiled dataset build (Sat 12:35) | train 3266 imgs / 2544 boxes, valid 1590 / 1182, 5 s; matches test counts | [test] |
 
