@@ -1,14 +1,14 @@
 # SIESTA: Team Memory (complete shared context)
 
-> **For Claude reading this file:** this is the complete memory of the team lead's working session with Claude (Fri 20 Nov 21:50 → Sat 21 Nov 12:05, Paris time). Treat it as what you already know. It records what the team was given, what was researched and verified, every decision and why, what was built and tested, and what's still open. Labels: **[verified]** = checked against official files, code or docs; **[test]** = measured by our own tests; **[unconfirmed]** = not yet known; **[our view]** = a judgement. Never present [unconfirmed] or synthetic numbers as facts. If something isn't here, in `TEAM_BRIEF.md`, or in the official kits, say you don't know.
+> **For Claude reading this file:** this is the complete memory of the team lead's working session with Claude (Fri 20 Nov 21:50 → Sat 21 Nov 12:05, Paris time). Treat it as what you already know. It records what the team was given, what was researched and verified, every decision and why, what was built and tested, and what's still open. Labels: **[verified]** = checked against official files, code or docs; **[test]** = measured by our own tests; **[unconfirmed]** = not yet known; **[our view]** = a judgement. Never present [unconfirmed] or synthetic numbers as facts. If something isn't here, in `docs/2_TEAM_BRIEF_plan_roles_checkpoints.md`, or in the official kits, say you don't know.
 >
 > **Companion files (same repo / project):**
-> - `docs/TEAM_BRIEF.md`: the operational plan (roles, checkpoints, rules, pitch).
-> - `docs/ALL_CHALLENGES.md`: all 9 challenges in detail.
-> - `docs/TEST_REPORT.md`: tests and the requirements coverage matrix.
+> - `docs/2_TEAM_BRIEF_plan_roles_checkpoints.md`: the operational plan (roles, checkpoints, rules, pitch).
+> - `docs/4_ALL_CHALLENGES_reference.md`: all 9 challenges in detail.
+> - `docs/3_TEST_REPORT_results_and_coverage.md`: tests and the requirements coverage matrix.
 > - `README.md`: how to run the code.
 >
-> **Teammate quick start:** say "I am P1/P2/P3/P4" and read your role in `TEAM_BRIEF.md` Section 6.
+> **Teammate quick start:** say "I am P1/P2/P3/P4" and read your role in `docs/2_TEAM_BRIEF_plan_roles_checkpoints.md` Section 6.
 
 ---
 
@@ -46,7 +46,7 @@ We're a team of **4** at the **European Defence Tech Hackathon (EDTH) Paris, 20�
 4. **Featherless AI**: $25 LLM API credits, promo code `EDTH26`, OpenAI-compatible base URL `https://api.featherless.ai/v1`, one use per account. It's an LLM API, **not** training GPUs. Optional coding help only, never inside the pipeline.
 5. **Alta Ares** sits in the ground-floor restaurant, has RC drones (for their Search & Destroy challenge), and published a GitHub repo `AA-OpenProjects/AA-Hackathon-EDTH-202611`.
 
-### The 9 challenges (full detail in `ALL_CHALLENGES.md`)
+### The 9 challenges (full detail in `docs/4_ALL_CHALLENGES_reference.md`)
 | # | Name (sponsor) | Teams at registration | Our verdict |
 |---|---|---|---|
 | 1 | Voice-to-Map (Lysk) | 9 | Not chosen: crowded, no scorer |
@@ -119,7 +119,7 @@ We're a team of **4** at the **European Defence Tech Hackathon (EDTH) Paris, 20�
 
 ---
 
-## 6. Key kit facts (full list in `TEAM_BRIEF.md` Section 2) [verified]
+## 6. Key kit facts (full list in `docs/2_TEAM_BRIEF_plan_roles_checkpoints.md` Section 2) [verified]
 
 **Ch 6**
 - Classes `0 drone_air, 1 airplane, 2 helicopter`.
@@ -155,21 +155,21 @@ We're a team of **4** at the **European Defence Tech Hackathon (EDTH) Paris, 20�
 ## 7. Code kit map (repo layout)
 
 ```
-c6/build_tiled_dataset.py   P1  native 384 crops + originals + negatives, RF-DETR folder layout
-c6/tiling.py                     shared: kit decode import, tile grid, Detector, class-wise NMS
-c6/tiled_detect.py          P1  COCO preds for valid/test (tiles + whole-frame pass)
-c6/detect_video.py          P2  per-frame detections, modes full | motion (default 12 windows)
-c6/track.py                 P2  tracker + output policy -> MOT files (offline / --online / --kit for camera comp)
-c6/synth_test.py            P2  synthetic tracker mechanics test
-c8/train_rank.py            P3  kit model + RankNet + augmentation; selection on clip-pooled valid
-c8/pool_clips.py            P3  clip pooling for valid/test JSONL
-c9/train_cv.py              P3  augmentation + 7-fold CV threshold + fused rule; exports ONNX with metadata
-c9/predict_consistent.py    P3  consistent JSONL predictions
-metis/preprocess_cnn.py     P4  axcompile transform for Ch 8/9 (224, no normalisation)
-metis/preprocess_rfdetr.py  P4  axcompile transform for Ch 6 (384, ImageNet normalisation)
-check_submissions.py        ALL pre-upload checker (must print PASS)
+ch6_detection_tracking/build_tiled_dataset.py   P1  native 384 crops + originals + negatives, RF-DETR folder layout
+ch6_detection_tracking/tiling.py                     shared: kit decode import, tile grid, Detector, class-wise NMS
+ch6_detection_tracking/tiled_detect.py          P1  COCO preds for valid/test (tiles + whole-frame pass)
+ch6_detection_tracking/detect_video.py          P2  per-frame detections, modes full | motion (default 12 windows)
+ch6_detection_tracking/track.py                 P2  tracker + output policy -> MOT files (offline / --online / --kit for camera comp)
+ch6_detection_tracking/synth_test.py            P2  synthetic tracker mechanics test
+ch8_edge_triage/train_rank.py            P3  kit model + RankNet + augmentation; selection on clip-pooled valid
+ch8_edge_triage/pool_clips.py            P3  clip pooling for valid/test JSONL
+ch9_acoustic_wake/train_cv.py              P3  augmentation + 7-fold CV threshold + fused rule; exports ONNX with metadata
+ch9_acoustic_wake/predict_consistent.py    P3  consistent JSONL predictions
+metis_axelera_compile/preprocess_cnn.py     P4  axcompile transform for Ch 8/9 (224, no normalisation)
+metis_axelera_compile/preprocess_rfdetr.py  P4  axcompile transform for Ch 6 (384, ImageNet normalisation)
+check_submissions_before_upload.py        ALL pre-upload checker (must print PASS)
 tests/run_all_tests.py      ALL 15 tests; rerun with real models via --c6-onnx/--c8-onnx/--c9-onnx
-scripts/motion_probe.py, scripts/harmonic_probe.py   early probes (Section 8)
+early_probes/motion_probe.py, early_probes/harmonic_probe.py   early probes (Section 8)
 ```
 Exact commands are in `README.md`. Extra dependency: `opencv-python`.
 
@@ -182,7 +182,7 @@ Exact commands are in `README.md`. Extra dependency: `opencv-python`.
 | Kit baselines (from kits, 1–2 epoch smoke) | Ch 6 mAP@50 0.447, small_AP50 0.506, MOTA −0.013, IDF1 0.248; Ch 8 capture@1% 0, @5% 0.286, Spearman −0.157; Ch 9 wake F1 0.80, accuracy 0.50 | [verified, kit] |
 | Motion probe, seq 1–4 | target found in 99/150, 68/72, 145/150, 124/150 frames; 34/14/1151/197 candidates per frame; motion-only MOTA −0.56 | [test] |
 | Physics sound features | LOO wake F1 0.31, so cut | [test] |
-| Full test suite | 15/15 PASS (see `TEST_REPORT.md`) | [test] |
+| Full test suite | 15/15 PASS (see `docs/3_TEST_REPORT_results_and_coverage.md`) | [test] |
 | Motion-window coverage (12 windows) | seq 1: 65%, seq 2: 97%, seq 3: 95%, **seq 4: 19%** | [test] |
 | Detector calls per frame | full 13.3, motion 6.9 (about 48% fewer) | [test, dummy model] |
 | Tracker policy | MOTA −0.86 → +0.56, IDF1 0.37 → 0.76 (avg of 3) | [test, **synthetic**] |
@@ -196,7 +196,7 @@ Exact commands are in `README.md`. Extra dependency: `opencv-python`.
 
 ## 9. Plan from here (Sat 12:05 onwards)
 
-**Gate 0 (target 12:00, finish now):** organiser answers, installs, data checks, `v0` baselines. See `TEAM_BRIEF.md` 0a.
+**Gate 0 (target 12:00, finish now):** organiser answers, installs, data checks, `v0` baselines. See `docs/2_TEAM_BRIEF_plan_roles_checkpoints.md` 0a.
 
 | When | Must be true |
 |---|---|
@@ -228,7 +228,7 @@ Exact commands are in `README.md`. Extra dependency: `opencv-python`.
 ## 11. Rules every teammate and every Claude follows
 1. Never tune on test. Calibration folders are for INT8 only.
 2. Only kit evaluators produce reportable numbers; label each with model, FP32/INT8 and hardware.
-3. Keep a valid tagged submission at all times; run `check_submissions.py` before every upload; submit early.
+3. Keep a valid tagged submission at all times; run `check_submissions_before_upload.py` before every upload; submit early.
 4. Don't overclaim: say "camera-off time", not energy; small test sets are noisy; synthetic results are not scores.
 5. No secrets in the repo; no datasets or model weights in git.
 6. **Claude won't assist with Challenge 3's autonomous strike guidance.** Siesta is detection, confirmation and data triage.

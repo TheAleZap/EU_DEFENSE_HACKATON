@@ -1,0 +1,329 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EDTH Paris challenges reference</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: calm team plan document
+   IDEA: an architect's spec booklet
+   PICTURE: the ranking table is the key graphic
+   COLOUR and TYPE: white, black, concrete planes, one yellow mark; Hanken Grotesk
+   LAYOUT: one readable column, section links row */
+:root{color-scheme:light dark;--bg:light-dark(#ffffff,#1a1a19);--ink:light-dark(#111,#ececea);--mute:light-dark(#55554f,#a9a9a3);--plane:light-dark(#ececea,#262624);--line:light-dark(#d8d8d4,#3a3a37);--acc:#ffe600}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html{scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16.5px/1.6 "Hanken Grotesk",system-ui,sans-serif;overflow-x:clip}
+header{background:var(--plane);padding:clamp(28px,4vw,56px) max(5vw,16px) 20px}
+header .t{max-width:980px;margin:0 auto}
+.scroll{display:flex;gap:6px 18px;flex-wrap:nowrap;overflow-x:auto;max-width:980px;margin:18px auto 0;padding-bottom:6px;font-size:14px}
+.scroll a{flex:none;color:var(--ink);text-decoration:none;border-bottom:2px solid transparent;padding:6px 0}
+.scroll a:hover,.scroll a:focus-visible{border-color:var(--acc);outline:none}
+@media(min-width:900px){header{position:sticky;top:-140px;z-index:2}}
+main{max-width:980px;margin:0 auto;padding:12px max(5vw,16px) 64px}
+h1{font-size:clamp(30px,4.6vw,46px);line-height:1.05;font-weight:700;margin:0;text-wrap:balance}
+h2{font-size:26px;line-height:1.15;margin:52px 0 14px;padding-top:14px;border-top:1px solid var(--ink);text-wrap:balance}
+h3{font-size:19px;margin:34px 0 8px}
+p,li{max-width:72ch}
+blockquote{margin:18px 0;padding:14px 18px;background:var(--plane);border-left:6px solid var(--acc)}
+blockquote p{margin:6px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:14px 0}
+th,td{text-align:left;vertical-align:top;padding:9px 10px;border-bottom:1px solid var(--line)}
+th{font-weight:700;border-bottom:2px solid var(--ink)}
+code{font-size:.92em;background:var(--plane);padding:1px 5px;border-radius:3px;overflow-wrap:anywhere}
+a{color:inherit}
+hr{border:0;border-top:1px solid var(--line);margin:32px 0}
+@media(max-width:600px){table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-block:10px;border-bottom:1px solid var(--line)}.stack td{display:flow-root;border:0;padding:3px 0;padding-inline-start:8em;text-align:start}.stack td::before{content:attr(data-l);float:inline-start;width:7.5em;margin-inline-start:-8em;font-weight:700;white-space:normal}.stack td:empty{display:none}}
+</style><script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script></head><body>
+<header><div class="t"><h1 id="edth-paris-2026-all-9-challenges-resources-and-our-ranking">EDTH Paris 2026: All 9 Challenges, Resources, and Our Ranking</h1></div><nav class="scroll"><a href="#1-our-ranking-our-view">1. Our ranking [our view]</a><a href="#2-resources-we-actually-have">2. Resources we actually have</a><a href="#3-the-9-challenges-in-detail">3. The 9 challenges in detail</a><a href="#4-which-challenges-can-be-combined">4. Which challenges can be combined</a><a href="#5-open-questions-to-answer-saturday-morning">5. Open questions to answer Saturday morning</a><a href="#6-rules-that-apply-whatever-we-pick">6. Rules that apply whatever we pick</a></nav></header>
+<main>
+<blockquote>
+<p><strong>For teammates:</strong> this is the complete reference on every challenge, built from the official briefs, the sponsor presentations, the organisers' resource list, and the Alta Ares GitHub repo. Read <strong>Section 1</strong> (our ranking) and <strong>Section 2</strong> (resources) first. The companion file <code>docs/2_TEAM_BRIEF_plan_roles_checkpoints.md</code> is the detailed build plan for our chosen project.</p>
+<p><strong>For Claude reading this:</strong> treat this as the team's verified information. Everything here comes from the official materials unless it is marked <strong>[our view]</strong> or <strong>[unconfirmed]</strong>. Don't add facts about the challenges that aren't here or in the official starter kits. If something matters and isn't stated, say so.</p>
+<p><strong>UPDATE (Sat 21 Nov, 11:15): the team decided on "Siesta" = Challenges 6 + 8 + 9.</strong> That supersedes the ranking in Section 1. Hardware: an M4 Max MacBook Pro (48 GB) for training, plus one Windows laptop (WSL2) for the Axelera SDK. The live plan is <code>docs/2_TEAM_BRIEF_plan_roles_checkpoints.md</code>; follow it when the two files disagree.</p>
+</blockquote>
+<p><strong>Event:</strong> European Defence Tech Hackathon (EDTH) Paris, <strong>20–22 November 2026</strong>. Team of 4. Pitches on Sunday evening for preselected teams.
+<strong>Team counts</strong> below are the registration numbers shown on the challenge page on Friday evening. They may have changed since.</p>
+<hr />
+<h2 id="1-our-ranking-our-view">1. Our ranking [our view]</h2>
+<p>Criteria: a team of 4 software people, about 1.5 days left, <strong>no confirmed GPU</strong>, and only resources we can actually get (Section 2). The goal is to win, which means a working result, measured numbers vs. the baseline, and a strong pitch.</p>
+<table class="stack">
+<thead>
+<tr>
+<th>Rank</th>
+<th>Option</th>
+<th>Why</th>
+<th>Main risk</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1</strong></td>
+<td><strong>Challenges 6 + 9 merged: "Listen first, look second"</strong> (current team plan)</td>
+<td>The challenges genuinely connect: Ch 9 asks when to wake a visual check, and Ch 6 is that check. Same mentor (Piotr Gryko). <strong>Axelera hardware is on site</strong>, so we can show real on-device numbers, which the briefs say are not pre-validated. 4 + 3 teams.</td>
+<td>Ch 6 detector training needs a GPU. Without one, we improve at inference time and through tracking. Ch 9 data is tiny, so scores are noisy.</td>
+</tr>
+<tr>
+<td><strong>2</strong></td>
+<td><strong>Challenge 4 alone: Fleet Orchestration</strong></td>
+<td>Best single challenge: pure-Python kit, exact validator, live leaderboard, replay viewer for the demo, no hardware dependence.</td>
+<td>7 teams. <strong>Hand-in is due Sunday 12:00.</strong> An invalid plan scores 0. Competing teams may be strong in optimisation.</td>
+</tr>
+<tr>
+<td><strong>3</strong></td>
+<td><strong>Challenges 8 + 9 merged: "only looks when it hears, only sends what matters"</strong></td>
+<td>Both are small MobileNetV3 models that train on a laptop, same mentor, Axelera on site, only 1 + 3 teams.</td>
+<td>Very small evaluation sets (Ch 9: 6 test clips; Ch 8: 1- and 7-frame validation budgets). Scores will be noisy.</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Challenges 6 + 7 merged</td>
+<td>Shared detection and tracking code. Ch 7 has only 1 team.</td>
+<td>Needs a GPU for both.</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Challenge 1: Voice-to-Map</td>
+<td>Very demo-friendly. Featherless credits cover the LLM step.</td>
+<td>9 teams, no automatic scorer, hard to stand out.</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Challenge 2: Keep It Level</td>
+<td>Only 2 teams. No physical build required.</td>
+<td>Needs controls/mechatronics and CAD skills we don't have.</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Challenge 3: Search &amp; Destroy</td>
+<td>Rated "Advanced", 5 teams.</td>
+<td>Our assistant (Claude) won't help develop autonomous strike guidance, so we would be on our own.</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Challenge 5: Jet Interceptor</td>
+<td>—</td>
+<td><strong>Not feasible.</strong> Needs jet-engine test facilities, composites, and your own flight electronics.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Decision rule [our view]:</strong>
+- Stay on <strong>6 + 9</strong> unless, by the Saturday 13:00 checkpoint, we can't produce valid baseline submissions for both, or the Ch 6 baseline proves impossible to improve without a GPU.
+- If that happens, either fall back to <strong>8 + 9</strong> (laptop-only), or switch everyone to <strong>Challenge 4</strong>. The Ch 4 hand-in deadline of Sunday 12:00 makes a late switch risky.
+- <strong>Never</strong> run three submissions at once (4 + 6 + 9) with 4 people.</p>
+<p><strong>How Challenge 4 still appears in our pitch:</strong> the confirmed drone tracks from 6 + 9 become contacts for a C2 fleet planner. That's the "next step" slide only.</p>
+<hr />
+<h2 id="2-resources-we-actually-have">2. Resources we actually have</h2>
+<table class="stack">
+<thead>
+<tr>
+<th>Resource</th>
+<th>Details</th>
+<th>Relevant to</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Laptops (CPU)</td>
+<td>All starter kits for Ch 1, 3, 4, 8, 9 run on CPU. Ch 6/7 baselines run inference on CPU ONNX Runtime.</td>
+<td>All</td>
+</tr>
+<tr>
+<td>GPU</td>
+<td><strong>[unconfirmed]</strong> We don't know if we have one.</td>
+<td>Ch 6, 7 training</td>
+</tr>
+<tr>
+<td><strong>Axelera equipment</strong></td>
+<td><strong>Spectrum Room, upstairs.</strong> Shared by all teams on Ch 6–9, so book device time early. Exactly what's there is <strong>[unconfirmed]</strong>.</td>
+<td>Ch 6, 7, 8, 9</td>
+</tr>
+<tr>
+<td>Data for Ch 6–9</td>
+<td>One shared pCloud link (on the challenge pages).</td>
+<td>Ch 6, 7, 8, 9</td>
+</tr>
+<tr>
+<td>Alta Ares GitHub repo</td>
+<td><code>github.com/AA-OpenProjects/AA-Hackathon-EDTH-202611</code>, with both Alta Ares challenges (Fleet Orchestration, Search &amp; Destroy). The Alta Ares team sits in the <strong>ground-floor restaurant</strong>. They have <strong>RC drones</strong> available to test-fly Search &amp; Destroy solutions.</td>
+<td>Ch 3, 4</td>
+</tr>
+<tr>
+<td><strong>Featherless AI</strong></td>
+<td>$25 of LLM API credits per account, code <strong><code>EDTH26</code></strong> (Developer plan, no card needed, one use per account, valid until 31 Dec 2026). OpenAI-compatible API, base URL <code>https://api.featherless.ai/v1</code>, e.g. model <code>zai-org/GLM-5.2</code>. Use the signup link from the organisers' message, not the one in the setup guide (out of date). <strong>It's an LLM inference API, not training GPUs.</strong> Keep keys in environment variables, never in the repo.</td>
+<td>Ch 1 (intent extraction), coding assistant, explanation text</td>
+</tr>
+<tr>
+<td>3D printers</td>
+<td>Provided by <strong>Druk Army (3D Print Army)</strong>.</td>
+<td>Ch 2 (mock-ups)</td>
+</tr>
+<tr>
+<td>Fire Point equipment</td>
+<td>In the <strong>hall near the entrance</strong>. The organisers' list only repeats the Ch 2 specifications, so what's physically there is <strong>[unconfirmed]</strong>.</td>
+<td>Ch 2</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-the-9-challenges-in-detail">3. The 9 challenges in detail</h2>
+<h3 id="challenge-1-voice-to-map-real-time-positional-tracking">Challenge 1 — Voice-to-Map: Real-Time Positional Tracking</h3>
+<ul>
+<li><strong>Sponsor:</strong> Lysk. <strong>Mentors:</strong> Henry Heinemann and Florent Ogès (henry@lysk.ai, edth@lysk.ai, or the Lysk team on site). <strong>Teams:</strong> 9.</li>
+<li><strong>Problem:</strong> teams report positions by voice ("I am behind the church", "I moved towards 35th street"). Updating the map by hand is slow, error-prone, and always a few minutes behind.</li>
+<li><strong>Build:</strong> a web app that transcribes short spoken updates, extracts position/movement intent, resolves landmarks and streets to coordinates, and moves a marker/path on a shared live map with timestamps and a replayable history.</li>
+<li><strong>Suggested stack (indicative, swappable):</strong> a speech-to-text API, <strong>Mistral</strong> for intent extraction, <strong>OpenStreetMap</strong> APIs for geocoding.</li>
+<li><strong>What the judges look at (from the Lysk deck):</strong> (1) it works live: speak and the map updates within seconds; (2) natural phrasing is understood ("South of the church", "towards 35th street"); (3) marker and path with timestamps and a browsable history.</li>
+<li><strong>Equipment:</strong> headset.</li>
+<li><strong>Scoring:</strong> no automatic scorer; the demo decides.</li>
+<li><strong>[our view] How to stand out:</strong> resolve ambiguity (which church? use the one nearest the unit's last known position and show a confidence level), track multiple units by callsign, offer an offline fallback with local speech-to-text, and get the "south of / towards" geometry right.</li>
+</ul>
+<h3 id="challenge-2-keep-it-level-compact-stabilised-platform-for-uav-antennas">Challenge 2 — "Keep It Level": Compact Stabilised Platform for UAV Antennas</h3>
+<ul>
+<li><strong>Sponsor:</strong> Fire Point. <strong>Mentors:</strong> Fire Point team. <strong>Teams:</strong> 2.</li>
+<li><strong>Problem:</strong> when a UAV manoeuvres, mounted equipment tilts with the airframe. A CRPA (Controlled Reception Pattern Antenna) must stay level relative to local vertical for good GNSS reception. Existing gyro-stabilised platforms are too large, heavy, and expensive for small UAVs.</li>
+<li><strong>Requirements:</strong> airframe tilt up to <strong>45°</strong> in roll and pitch; angular rate <strong>1.5–25 °/s</strong>; turbulence <strong>0.1–1.2 Hz</strong>; leveling error <strong>≤ 2°</strong>; antenna mass <strong>2 kg minimum, 4 kg optional</strong>; antenna <strong>400 × 400 mm</strong>, and the platform must not extend beyond the antenna's footprint. Use attitude data from the <strong>Cube Orange</strong> flight controller. Components must be fast and powerful enough to keep up.</li>
+<li><strong>Recommended workflow:</strong> choose a stabilisation principle → platform concept → control-system math model and functional diagram, with calculations → component selection from those results → 3D model and electronic schematic.</li>
+<li><strong>Deliverables:</strong> design concept (functional and electronic schematics, 3D prototype model, component list with justification from simulation); control-system math model (source code); simulation using <strong>real Cube Orange data</strong> (flight logs or live connection), with plots showing airframe attitude changing while the platform stays within <strong>±2°</strong>.</li>
+<li><strong>Equipment:</strong> Fire Point items in the entrance hall [contents unconfirmed]; 3D printers available.</li>
+</ul>
+<h3 id="challenge-3-search-destroy-target-acquisition-and-guidance-in-an-occluded-environment">Challenge 3 — Search &amp; Destroy: Target Acquisition and Guidance in an Occluded Environment</h3>
+<ul>
+<li><strong>Sponsor:</strong> Alta Ares (ID SUB-13, owner Jean-Max Rodriguez; main contact jules.giraud@altaares.com). Rated <strong>Advanced</strong>. <strong>Teams:</strong> 5.</li>
+<li><strong>Problem (official scenario):</strong> an ISR drone geolocates an armoured vehicle and is then chased away by EW. An FPV launches with stale, imprecise coordinates, its video link is jammed, and onboard guidance must re-find the target through trees and ruins and reach it with no pilot and no link.</li>
+<li><strong>Repo version of the task:</strong> the simulated FPV starts 225–275 m from the arena centre (5–25 m altitude, 0–10 m/s, heading within 20° of centre). It must find and touch an <strong>orange 4 × 1.65 × 1.55 m box</strong> hidden in a 700 × 700 m arena without touching anything else, within <strong>120 s</strong>. Inputs: a detector box on the target (within 250 m; misses 5% of the time; never fires on other objects), noisy depth map, IMU, and drifting visual-inertial odometry (VIO). Output: RC sticks (roll, pitch, yaw, throttle) in [−1, 1] at <strong>30 Hz</strong>. Simulator: PyBullet, CPU.</li>
+<li><strong>Hand-in:</strong> <code>handin/agent.py</code> with <code>reset()</code> and <code>act(observation)</code>. Evaluated on <strong>hidden terrains</strong>. <strong>Judging:</strong> a jury ranks teams using hidden-terrain metrics, with success rate first, plus robustness and soundness of the approach.</li>
+<li><strong>Bonus ideas (from the brief):</strong> explainability, failsafe behaviour on link loss, coordinated multi-drone action.</li>
+<li><strong>Equipment:</strong> laptop (CPU/GPU) or a Raspberry Pi. Alta Ares has RC drones on site for test flights.</li>
+<li><strong>[our view]:</strong> our assistant won't help develop this one.</li>
+</ul>
+<h3 id="challenge-4-fleet-orchestration-plan-with-and-without-comms">Challenge 4 — Fleet Orchestration: Plan, With and Without Comms</h3>
+<ul>
+<li><strong>Sponsor:</strong> Alta Ares (ID SUB-15, owner Axel Durand-Allize; main contact jules.giraud@altaares.com; team sits in the ground-floor restaurant). Rated <strong>Intermediate</strong>. <strong>Teams:</strong> 7.</li>
+<li><strong>Problem:</strong> a mixed fleet of ISR scouts and effector drones must be tasked against several contacts: who goes where, when, and in what order. There are more contacts than the fleet can serve.</li>
+<li><strong>World (from the repo):</strong> 3D local metres, flat ground, seconds. <strong>Scouts</strong> observe and must land back home. <strong>Effectors</strong> (light or heavy) are one-way: an engagement consumes them. <strong>Contacts:</strong> <code>hostile</code> (may be engaged; needs a given number of light and heavy effectors), <code>unknown</code> (observe only), <code>friendly</code> and <code>civilian</code> (never approached). <strong>Zones:</strong> no-fly cylinders, forbidden below their ceiling, can be overflown above it. Four levels, <strong>L1–L4, from 5 to 100 aircraft</strong>. Everything is static and fully known; the generator is public.</li>
+<li><strong>The ten rules (any violation → 0):</strong> R1 well-formed plan; R2 speed and altitude limits; R3 energy fits battery and scouts end at home; R4 a scout observation completed ≥ <code>confirm_margin_s</code> before any engagement; R5 only effectors engage, only hostiles; scouts observe hostile or unknown; R6 no route enters a zone below its ceiling or the protected area around friendly/civilian contacts; R7 never engage a hostile that is close to a friendly or civilian; R8 aircraft stay ≥ <code>d_sep_m</code> apart in 3D (exception: effectors engaging the same contact); R9 actions inside the contact's time window; R10 all-or-nothing: a contact gets exactly the effectors it needs, synchronised, or none. All numbers are in each scenario's <code>rules</code> block.</li>
+<li><strong>Score:</strong> <code>Σ points of served contacts − λ·energy (Wh) − μ·effectors consumed</code>. Optional "verify" add-on: a scout re-observing a hostile 10–120 s after its engagement adds 25% to its points. This has its own board and does <strong>not</strong> change the ranking.</li>
+<li><strong>Kit:</strong> pure Python 3.9+, <strong>standard library only</strong> (no numpy, no installs, no GPU). Includes scenario generator, validator, scorer, greedy baseline, and an offline HTML replay viewer you can use in a demo.</li>
+<li><strong>Hand-in:</strong> a folder with <code>planner.py</code>. They call <code>python3 planner.py scenario.json plan.json</code>, <strong>60 s per run</strong>, on <strong>unseen scenarios</strong>. A crash, timeout, missing plan, or invalid plan scores 0. <strong>Ranking:</strong> sum of raw scores; ties broken by total run time. A <strong>jury</strong> also assesses soundness and presentation. <strong>Hand-in deadline: Sunday 22 Nov, 12:00.</strong></li>
+<li><strong>Live validation board:</strong> upload plans for 8 public scenarios (<code>L1-101, L2-201, L2-202, L3-301, L3-302, L3-303, L4-401, L4-402</code>). The best score per scenario is kept, so a worse upload never hurts. Server address and token come from the organisers.</li>
+<li><strong>Correction vs. the PDF brief:</strong> the PDF described an optional link-loss policy and a comms "sizing curve". <strong>The repo version states there is no communication in the simulation and doesn't include that part. [unconfirmed]</strong> Ask Alta Ares whether link-loss still counts for anything.</li>
+<li><strong>Bonus ideas (PDF):</strong> explainability (justify each assignment to an operator), scaling study (30 to 100+ aircraft), fewer operator approvals, finding rule loopholes.</li>
+<li><strong>[our view] Approach if chosen:</strong> validator-in-the-loop planning (never write an invalid plan; fall back to the greedy baseline); constructive insertion (scout confirm first, then effectors, respecting R4–R10); detours over or around zones; deconfliction by timing; local search within the 60 s budget; submit to the board early and often.</li>
+</ul>
+<h3 id="challenge-5-jet-drone-interceptor">Challenge 5 — Jet-Drone Interceptor</h3>
+<ul>
+<li><strong>Sponsor:</strong> Ukrainian military / Frontier Defence Labs. <strong>Mentors:</strong> Stephan and Leo (contact@frontier-defence.com). <strong>Teams:</strong> 0.</li>
+<li><strong>For:</strong> teams that <strong>already have jet-powered drone experience</strong>.</li>
+<li><strong>Requirements:</strong> airframe keeps engine airflow during aggressive manoeuvres at 500 km/h; top speed ≥ 700 km/h; carries 1 kg electronics + engine + fuel + 500 g extra; range ≥ 50 km; mass-producible in decentralised manufacturing, cost-effective, reliable; room and CoG margin for future seekers and computers.</li>
+<li><strong>Equipment:</strong> carbon/composite prototyping, a jet-engine test facility, your own flight electronics (not provided).</li>
+<li><strong>[our view]:</strong> not feasible for us.</li>
+</ul>
+<h3 id="challenge-6-small-aircraft-detection-and-tracking">Challenge 6 — Small Aircraft Detection and Tracking</h3>
+<ul>
+<li><strong>Mentor:</strong> Piotr Gryko. <strong>Teams:</strong> 4.</li>
+<li><strong>Task:</strong> build on the <strong>RF-DETR baseline</strong> to detect <strong>drones, airplanes, helicopters</strong> against trees, buildings, and changing skies, with stable track IDs through movement, missed detections, and clutter.</li>
+<li><strong>Data:</strong> 1,609 images, <strong>859 train / 422 val / 328 test</strong>, plus <strong>8 tracking sequences</strong>. 3 classes, negative examples, <strong>200 training-only calibration images</strong>.</li>
+<li><strong>Outputs:</strong> <strong>COCO JSON</strong> detections and <strong>MOT</strong> tracks. A viewer is supplied.</li>
+<li><strong>Evaluation:</strong> detection <strong>mAP</strong>, <strong>small-object AP</strong>, <strong>MOTA</strong>, <strong>IDF1</strong>, <strong>track continuity</strong>. Score locally on val; test labels held out.</li>
+<li><strong>Edge:</strong> <strong>Axelera Embedded 110m, 1 GB device memory.</strong> The starter runs on CPU ONNX Runtime. Metis compilation, INT8 accuracy, and end-to-end performance need separate validation.</li>
+</ul>
+<h3 id="challenge-7-rgb-thermal-detection-and-tracking">Challenge 7 — RGB + Thermal Detection and Tracking</h3>
+<ul>
+<li><strong>Mentor:</strong> Piotr Gryko. <strong>Teams:</strong> 1.</li>
+<li><strong>Task:</strong> adapt the <strong>RF-DETR baseline</strong> into one shared detection + tracking pipeline for <strong>armoured vehicles, other vehicles, and people</strong> in both RGB and thermal imagery, without neglecting either. Explore training strategies and quantisation that hold up across contrast, texture, and appearance differences.</li>
+<li><strong>Data:</strong> 1,620 images, <strong>712 train / 484 val / 424 test</strong>, plus <strong>8 tracking streams</strong>. Calibration: <strong>100 RGB + 100 thermal</strong> training images. RGB and thermal are <strong>separate scenes, not registered pairs</strong>.</li>
+<li><strong>Outputs:</strong> COCO JSON + MOT, with <strong>RGB and thermal results reported separately</strong>.</li>
+<li><strong>Evaluation:</strong> per-modality <strong>mAP, MOTA, IDF1, track continuity</strong>. Val labels public; test held out.</li>
+<li><strong>Edge:</strong> Axelera Embedded 110m. Start from the CPU ONNX baseline, then investigate INT8 accuracy, device memory, and throughput. Hardware deployment is an engineering goal, not a pre-validated feature.</li>
+</ul>
+<h3 id="challenge-8-edge-video-triage">Challenge 8 — Edge Video Triage</h3>
+<ul>
+<li><strong>Mentor:</strong> Piotr Gryko. <strong>Teams:</strong> 1.</li>
+<li><strong>Task:</strong> distil cloud-generated teacher labels into a compact edge model that <strong>ranks frames by priority</strong> and selects useful content within <strong>1% and 5% upload budgets</strong>. The student has five outputs: keep/discard, priority, modality, perspective, scene tags. Rank by priority score.</li>
+<li><strong>Data:</strong> <strong>947 frames from 282 clips</strong>, <strong>698 train / 138 val / 111 test</strong>, plus 200 training-only calibration images. Labels come from clip-level teacher assessments. <strong>No thermal training examples</strong> in this release.</li>
+<li><strong>Starter:</strong> <strong>MobileNetV3-Small</strong>, static ONNX export. Checkpoint selection and inference use the same priority score and tie-breaking rules.</li>
+<li><strong>Outputs:</strong> <strong>JSONL</strong> per frame with frame ID, keep decision, and priority score.</li>
+<li><strong>Evaluation:</strong> priority <strong>rank correlation</strong> and <strong>capture within the 1% and 5% budgets</strong>. The legacy <code>recall_at_*</code> metrics mean budget-normalised capture, not conventional recall. <strong>The validation budgets contain only 1 and 7 frames</strong>, so interpret results with care.</li>
+<li><strong>Edge:</strong> Axelera Embedded 110m; validate deployment separately.</li>
+</ul>
+<h3 id="challenge-9-acoustic-to-visual-drone-detection">Challenge 9 — Acoustic-to-Visual Drone Detection</h3>
+<ul>
+<li><strong>Mentor:</strong> Piotr Gryko. <strong>Teams:</strong> 3.</li>
+<li><strong>Task:</strong> a lightweight acoustic model that, for each <strong>5-second audio window</strong>, decides whether to <strong>trigger a visual check</strong> and classifies the sound as <strong>drone buzz, vehicle/mechanical, explosion, or outdoor ambience</strong>.</li>
+<li><strong>Data:</strong> <strong>62 paired clips, 48 train / 8 val / 6 test.</strong> Each has 16 kHz mono audio, <strong>synchronised video</strong>, and a precomputed spectrogram. <strong>48 calibration spectrograms</strong> from training data.</li>
+<li><strong>Starter:</strong> <strong>MobileNetV3-Small</strong>, static ONNX export. The trainer stores its validation-selected wake threshold inside the model, and inference uses it automatically.</li>
+<li><strong>Outputs:</strong> <strong>JSONL</strong> per clip with clip ID, wake decision, and sound class.</li>
+<li><strong>Evaluation:</strong> <strong>wake F1</strong>, <strong>classification accuracy</strong>, <strong>fraction of windows without an optical wake</strong>.</li>
+<li><strong>Scope:</strong> optical inactivity is a resource-use proxy, <strong>not measured energy savings</strong>. Visual confirmation is optional. <strong>Bearing, camera slew, and event-onset prediction are not scored.</strong> Small pilot dataset; test labels held out.</li>
+<li><strong>Edge:</strong> Axelera Embedded 110m.</li>
+</ul>
+<hr />
+<h2 id="4-which-challenges-can-be-combined">4. Which challenges can be combined</h2>
+<p><strong>Scoring:</strong> every challenge is scored separately. A "merge" means separate deliverables plus one shared story and pitch. <strong>Before committing to a merge, confirm with the organisers that one team can submit to more than one challenge [unconfirmed].</strong></p>
+<table class="stack">
+<thead>
+<tr>
+<th>Combination</th>
+<th>How they connect</th>
+<th>Verdict [our view]</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>6 + 9</strong></td>
+<td>Ch 9 decides when to wake a visual check; Ch 6 is that check. Ch 9's synced video lets us demo the cascade. Same mentor, Axelera on site.</td>
+<td><strong>Best merge (our plan).</strong></td>
+</tr>
+<tr>
+<td><strong>8 + 9</strong></td>
+<td>Microphone wakes the camera; triage decides which frames to upload. Both laptop-trainable.</td>
+<td>Best fallback if there's no GPU.</td>
+</tr>
+<tr>
+<td><strong>6 + 7</strong></td>
+<td>One detection and tracking stack for air and ground, day and night.</td>
+<td>Needs a GPU.</td>
+</tr>
+<tr>
+<td>6 + 8 + 9</td>
+<td>Full edge sensing chain.</td>
+<td>Too much for 4 people in 1.5 days.</td>
+</tr>
+<tr>
+<td>3 + 4</td>
+<td>Same sponsor. Ch 4 plans the mission; Ch 3 handles the final approach.</td>
+<td>We won't pursue it (Ch 3).</td>
+</tr>
+<tr>
+<td>4 + 6 / 4 + 9</td>
+<td><strong>No technical link.</strong> Ch 4's only input is its scenario JSON, and its contacts are ground targets.</td>
+<td>Pitch narrative only.</td>
+</tr>
+<tr>
+<td>1 + 4</td>
+<td>Voice reports as an operator interface.</td>
+<td>Weak link, crowded track.</td>
+</tr>
+<tr>
+<td>2, 5</td>
+<td>Hardware builds.</td>
+<td>Standalone.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-open-questions-to-answer-saturday-morning">5. Open questions to answer Saturday morning</h2>
+<ol>
+<li>Do we have a GPU? (decides the Ch 6 approach)</li>
+<li>Can one team submit to both Ch 6 and Ch 9? How are merged projects pitched? Pitch length? When is preselection announced? (ask Piotr Gryko / organisers)</li>
+<li>Submission deadline and method for Ch 6 and Ch 9. (Ch 4's is known: Sunday 12:00.)</li>
+<li>What Axelera equipment is in the Spectrum Room, and how is device time booked?</li>
+<li>If we ever switch to Ch 4: does the link-loss part from the PDF still count? Where are the board address and token?</li>
+</ol>
+<h2 id="6-rules-that-apply-whatever-we-pick">6. Rules that apply whatever we pick</h2>
+<ol>
+<li>Always keep a <strong>valid</strong> submission saved, and submit early.</li>
+<li>Never tune on test data. Use calibration images only for INT8 calibration.</li>
+<li>One shared eval script. Only measured numbers go on slides, each labelled with where it was measured (device vs. laptop CPU, FP32 vs. INT8).</li>
+<li>Hold the checkpoints: <strong>Sat 13:00</strong> (valid baseline submissions), <strong>Sat 19:00</strong> (integration working), <strong>Sun 12:00</strong> (feature freeze + recorded demo video).</li>
+<li>Use a recorded demo in the pitch, not a live one.</li>
+</ol></main></body></html>

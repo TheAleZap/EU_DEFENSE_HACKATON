@@ -1,10 +1,10 @@
 # EDTH Paris 2026: All 9 Challenges, Resources, and Our Ranking
 
-> **For teammates:** this is the complete reference on every challenge, built from the official briefs, the sponsor presentations, the organisers' resource list, and the Alta Ares GitHub repo. Read **Section 1** (our ranking) and **Section 2** (resources) first. The companion file `EDTH_TEAM_BRIEF.md` is the detailed build plan for our chosen project.
+> **For teammates:** this is the complete reference on every challenge, built from the official briefs, the sponsor presentations, the organisers' resource list, and the Alta Ares GitHub repo. Read **Section 1** (our ranking) and **Section 2** (resources) first. The companion file `docs/2_TEAM_BRIEF_plan_roles_checkpoints.md` is the detailed build plan for our chosen project.
 >
 > **For Claude reading this:** treat this as the team's verified information. Everything here comes from the official materials unless it is marked **[our view]** or **[unconfirmed]**. Don't add facts about the challenges that aren't here or in the official starter kits. If something matters and isn't stated, say so.
 
-> **UPDATE (Sat 21 Nov, 11:15): the team decided on "Siesta" = Challenges 6 + 8 + 9.** That supersedes the ranking in Section 1. Hardware: an M4 Max MacBook Pro (48 GB) for training, plus one Windows laptop (WSL2) for the Axelera SDK. The live plan is `EDTH_TEAM_BRIEF.md`; follow it when the two files disagree.
+> **UPDATE (Sat 21 Nov, 11:15): the team decided on "Siesta" = Challenges 6 + 8 + 9.** That supersedes the ranking in Section 1. Hardware: an M4 Max MacBook Pro (48 GB) for training, plus one Windows laptop (WSL2) for the Axelera SDK. The live plan is `docs/2_TEAM_BRIEF_plan_roles_checkpoints.md`; follow it when the two files disagree.
 
 **Event:** European Defence Tech Hackathon (EDTH) Paris, **20–22 November 2026**. Team of 4. Pitches on Sunday evening for preselected teams.
 **Team counts** below are the registration numbers shown on the challenge page on Friday evening. They may have changed since.

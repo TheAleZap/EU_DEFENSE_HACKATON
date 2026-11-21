@@ -1,0 +1,573 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Siesta team master plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: calm team plan document
+   IDEA: an architect's spec booklet
+   PICTURE: the ranking table is the key graphic
+   COLOUR and TYPE: white, black, concrete planes, one yellow mark; Hanken Grotesk
+   LAYOUT: one readable column, section links row */
+:root{color-scheme:light dark;--bg:light-dark(#ffffff,#1a1a19);--ink:light-dark(#111,#ececea);--mute:light-dark(#55554f,#a9a9a3);--plane:light-dark(#ececea,#262624);--line:light-dark(#d8d8d4,#3a3a37);--acc:#ffe600}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html{scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16.5px/1.6 "Hanken Grotesk",system-ui,sans-serif;overflow-x:clip}
+header{background:var(--plane);padding:clamp(28px,4vw,56px) max(5vw,16px) 20px}
+header .t{max-width:980px;margin:0 auto}
+.scroll{display:flex;gap:6px 18px;flex-wrap:nowrap;overflow-x:auto;max-width:980px;margin:18px auto 0;padding-bottom:6px;font-size:14px}
+.scroll a{flex:none;color:var(--ink);text-decoration:none;border-bottom:2px solid transparent;padding:6px 0}
+.scroll a:hover,.scroll a:focus-visible{border-color:var(--acc);outline:none}
+@media(min-width:900px){header{position:sticky;top:-140px;z-index:2}}
+main{max-width:980px;margin:0 auto;padding:12px max(5vw,16px) 64px}
+h1{font-size:clamp(30px,4.6vw,46px);line-height:1.05;font-weight:700;margin:0;text-wrap:balance}
+h2{font-size:26px;line-height:1.15;margin:52px 0 14px;padding-top:14px;border-top:1px solid var(--ink);text-wrap:balance}
+h3{font-size:19px;margin:34px 0 8px}
+p,li{max-width:72ch}
+blockquote{margin:18px 0;padding:14px 18px;background:var(--plane);border-left:6px solid var(--acc)}
+blockquote p{margin:6px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:14px 0}
+th,td{text-align:left;vertical-align:top;padding:9px 10px;border-bottom:1px solid var(--line)}
+th{font-weight:700;border-bottom:2px solid var(--ink)}
+code{font-size:.92em;background:var(--plane);padding:1px 5px;border-radius:3px;overflow-wrap:anywhere}
+a{color:inherit}
+hr{border:0;border-top:1px solid var(--line);margin:32px 0}
+@media(max-width:600px){table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-block:10px;border-bottom:1px solid var(--line)}.stack td{display:flow-root;border:0;padding:3px 0;padding-inline-start:8em;text-align:start}.stack td::before{content:attr(data-l);float:inline-start;width:7.5em;margin-inline-start:-8em;font-weight:700;white-space:normal}.stack td:empty{display:none}}
+</style><script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script></head><body>
+<header><div class="t"><h1 id="siesta-eyes-closed-ears-open-team-master-plan-edth-paris-2026">SIESTA: "Eyes closed, ears open." Team Master Plan (EDTH Paris 2026)</h1></div><nav class="scroll"><a href="#0-open-questions-fill-in-as-answers-arrive">0. Open questions (fill in as answers arrive)</a><a href="#0a-gate-0-readiness-checklist-target-sat-1200-before-real-work">0a. Gate 0: readiness checklist (target Sat 12:00, before real work)</a><a href="#1-the-project-in-one-minute">1. The project in one minute</a><a href="#2-verified-facts-from-the-kits">2. Verified facts from the kits</a><a href="#3-what-we-tested-ourselves-verified-sat-morning">3. What we tested ourselves [verified, Sat morning]</a><a href="#3b-hardware-plan-decided-sat-1110">3b. Hardware plan (decided Sat 11:10)</a><a href="#4-the-approach-whats-unusual-and-why-its-feasible">4. The approach: what's unusual, and why it's feasible</a><a href="#5-architecture">5. Architecture</a><a href="#6-roles">6. Roles</a><a href="#7-checkpoints">7. Checkpoints</a><a href="#8-pitch-siesta">8. Pitch (Siesta)</a><a href="#9-rules-non-negotiable">9. Rules (non-negotiable)</a><a href="#10-decision-history-and-context-so-every-claude-knows-what-the-team-leads-chat-knows">10. Decision history and context (so every Claude knows what the team lead's chat knows)</a></nav></header>
+<main>
+<blockquote>
+<p><strong>Full shared context of the team lead's chat: <code>docs/1_TEAM_MEMORY_full_shared_context.md</code>. Read it first.</strong></p>
+<p><strong>How to use this file (each teammate):</strong> upload this file to Claude (or save it as <code>CLAUDE.md</code> in the repo root), then say <strong>"I am P_ — help me with my part."</strong> Read <strong>Section 0a (Gate 0 checklist)</strong>, <strong>Section 10 (decision history)</strong> and <strong>your role in Section 6</strong> first. Companion reference: <code>docs/4_ALL_CHALLENGES_reference.md</code>. Roles: <strong>P1 = Ch 6 detection (M4 Max Mac)</strong>, <strong>P2 = Ch 6 tracking</strong>, <strong>P3 = Ch 9 then Ch 8</strong>, <strong>P4 = Metis + integration + pitch (Windows laptop)</strong>.</p>
+<p><strong>Instructions for Claude reading this:</strong> this is the team's agreed plan. Stay inside the assigned role and the rules in Section 9. Facts marked <strong>[verified]</strong> were checked directly against the official starter kits and data. Facts marked <strong>[unconfirmed]</strong> were not. Never invent metrics, formats or kit behaviour. If something isn't here or in the kit, say so. Prefer simple, validated, working solutions. Keep a valid submission at all times.</p>
+</blockquote>
+<hr />
+<h2 id="0-open-questions-fill-in-as-answers-arrive">0. Open questions (fill in as answers arrive)</h2>
+<table class="stack">
+<thead>
+<tr>
+<th>Question</th>
+<th>Answer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Do we have a GPU (which one)?</td>
+<td><strong>MacBook Pro 16" (Nov 2024), Apple M4 Max, 48 GB unified memory.</strong> It's Apple's GPU (MPS), not NVIDIA/CUDA. <strong>[verified in code]</strong> RF-DETR 1.12.1 auto-detects MPS and supports MPS training (gather-based grid_sample, since MPS lacks its backward); the kit accepts rfdetr ≥ 1.4.0. The Ch 8/9 trainers default to CUDA-else-CPU, so <strong>pass <code>--device mps</code></strong>. <strong>Check first:</strong> <code>python -c "import platform; print(platform.machine())"</code> must print <code>arm64</code> (not <code>x86_64</code>/Rosetta). <strong>Speed unknown until measured:</strong> time 1 epoch; if the full tiled run can't finish by about 18:00, train the detector on a free cloud NVIDIA GPU (Google Colab / Kaggle free tiers) and keep the Mac for the tracker and Ch 8/9. GPU priority rules are in Section 6.</td>
+</tr>
+<tr>
+<td>Can one team submit to Ch 6, Ch 8 and Ch 9? How are combined projects judged and pitched?</td>
+<td><em>TBD (ask Piotr Gryko)</em></td>
+</tr>
+<tr>
+<td>Deadlines and submission method for Ch 6/8/9 test predictions</td>
+<td><em>TBD</em></td>
+</tr>
+<tr>
+<td>Are the "proposed judging weights" in the kits final?</td>
+<td><em>TBD</em></td>
+</tr>
+<tr>
+<td>What Axelera hardware and SDK version are in the Spectrum Room? How is device time booked?</td>
+<td><em>TBD (P4)</em></td>
+</tr>
+<tr>
+<td>Pitch length; preselection time</td>
+<td><em>TBD</em></td>
+</tr>
+<tr>
+<td><strong>Axelera room:</strong> number of Embedded 110m devices; host CPU/OS; access method (booking, SSH); time limits</td>
+<td><em>TBD (P4)</em></td>
+</tr>
+<tr>
+<td><strong>Axelera room:</strong> Voyager SDK version (kit docs reference v1.8); can <code>axcompile</code> run on the host or only on a separate machine?</td>
+<td><em>TBD (P4)</em></td>
+</tr>
+<tr>
+<td><strong>Axelera room:</strong> host has Python ≥ 3.11, <code>uv</code>, <code>ffmpeg</code>, OpenCV, internet for pip? Can we run our own Python (decoder + tracker) on that host for end-to-end timing? Can we SSH in from our laptops?</td>
+<td><em>TBD (P4)</em></td>
+</tr>
+<tr>
+<td><strong>Axelera room:</strong> does the compiler-only install (<code>axelera-devkit</code>) work on a laptop without a Metis card, so we can compile before our device slot?</td>
+<td><em>TBD (P4)</em></td>
+</tr>
+<tr>
+<td><strong>Axelera room:</strong> known-working RF-DETR / backbone compile on Metis? Tips for the GridSample deformable-attention tail?</td>
+<td><em>TBD (P4)</em></td>
+</tr>
+<tr>
+<td><strong>Axelera room:</strong> any way to measure device power? (Ch 8 scores power; otherwise report latency and memory only)</td>
+<td><em>TBD (P4)</em></td>
+</tr>
+<tr>
+<td><strong>Alta Ares (ground-floor restaurant):</strong> may we film and record one of their RC drones for a sensing demo, and under what safety conditions?</td>
+<td><em>TBD (only with organiser permission)</em></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="0a-gate-0-readiness-checklist-target-sat-1200-before-real-work">0a. Gate 0: readiness checklist (target Sat 12:00, before real work)</h2>
+<p>Tick every box. A box that can't be ticked gets an owner and a fallback; it never gets silently skipped.</p>
+<p><strong>A. Confirm with organisers (P4 asks; answers go in Section 0)</strong>
+- [ ] One team may submit to <strong>Ch 6, Ch 8 and Ch 9</strong>, and we know how a combined project is judged and pitched. <em>If not allowed:</em> Ch 6 + Ch 9 are the core; Ch 8 becomes pitch-only.
+- [ ] <strong>Deadline and upload method</strong> for test predictions of each challenge.
+- [ ] Whether the kits' <strong>"proposed" judging weights</strong> are final, plus the <strong>hardware measurement protocol</strong> (the kits say organisers must publish these).
+- [ ] <strong>Pitch length</strong> and <strong>preselection time</strong>.
+- [ ] <strong>Axelera access:</strong> device count, host OS, SDK version, booking, SSH, whether we can run our own Python on the host, power measurement.
+- [ ] <em>(Optional)</em> Alta Ares: permission and safety conditions to film or record an RC drone.</p>
+<p><strong>B. Team and machines</strong>
+- [ ] Roles fixed: <strong>P1 = M4 Max MacBook (Ch 6 detector)</strong>, <strong>P4 = the Windows laptop (Metis, integration, pitch)</strong>, P2 = tracker, P3 = Ch 9 + Ch 8.
+- [ ] Every teammate posts chip / RAM / OS in the team chat (Section 3b).
+- [ ] Private Git repo created; data, model weights and <code>.env</code> are <strong>git-ignored</strong>; folder per challenge.
+- [ ] Shared experiment log created (row format in Section 9).</p>
+<p><strong>C. Software on every machine</strong>
+- [ ] Python ≥ 3.11, <code>uv</code>, <code>git</code>, <code>ffmpeg</code> installed.
+- [ ] Each needed kit installed: <code>cd starter-kit &amp;&amp; uv venv &amp;&amp; uv pip install -e .</code>
+- [ ] <strong>Mac (P1):</strong> <code>python -c "import platform; print(platform.machine())"</code> prints <code>arm64</code>; RF-DETR pretrained weights downloaded (first training run does this, so do it on good Wi-Fi).
+- [ ] <strong>Windows (P4):</strong> WSL2 with <strong>Ubuntu 22.04</strong> installed (<code>wsl --install -d Ubuntu-22.04</code> in an admin PowerShell, then reboot). This needs admin rights and virtualisation enabled; <strong>start it now</strong>, it can take a while. <em>If blocked</em> (managed laptop): P4 works directly on the Axelera host over SSH or at the desk.</p>
+<p><strong>D. Data integrity (each owner checks their kit)</strong>
+- [ ] Ch 6: train 859 / valid 422 / test 328 images; 200 calibration; <code>tracking_eval/seq_0001–0008</code> with GT only in 0001–0004.
+- [ ] Ch 8: train 698 / valid 138 / test 111 frames; 200 calibration; test rows have <code>video_id</code>.
+- [ ] Ch 9: train 48 / valid 8 / test 6 clips (wav + mp4 + png); 48 calibration spectrograms.
+- [ ] Each kit's <code>viewer.py</code> opens.</p>
+<p><strong>E. Baselines run end to end (the <code>v0</code> safety net)</strong>
+- [ ] Ch 6: train → export → <code>predict detect</code> → <code>evaluate detect</code>, and <code>predict mot</code> → <code>evaluate mot --split valid</code>. Also generate <strong>test</strong> files (<code>preds.json</code> on test images; <code>pred_mot/seq_0005–0008.txt</code>).
+- [ ] Ch 8: train → predict → <code>evaluate triage</code>; test JSONL generated.
+- [ ] Ch 9: train → predict → <code>evaluate acoustic</code>; test JSONL generated.
+- [ ] All <code>v0</code> files saved and tagged.</p>
+<p><strong>F. Metis</strong>
+- [ ] Device slot booked; <code>axcompile --help</code> works on the device host (or WSL2).
+- [ ] <code>preprocess.py</code> written for the Ch 9 CNN (raw [0,1] RGB CHW float32; <strong>no</strong> ImageNet normalisation, since it's in the graph).
+- [ ] First compile attempt of the Ch 9 model done (success or written error).</p>
+<p><strong>G. Everyone has read Section 9 (rules) and Section 2 "pitfalls" below.</strong></p>
+<h3 id="known-pitfalls-every-claude-must-respect-these-verified-from-kit-codedocs">Known pitfalls (every Claude must respect these) [verified from kit code/docs]</h3>
+<ul>
+<li>Kit numbering: Ch 6 = kit "Challenge 1", Ch 8 = "Challenge 4", Ch 9 = "Challenge 5".</li>
+<li>Ch 6 COCO <code>category_id</code> is <strong>0-based</strong>; MOT <code>class_id</code> is <strong>1-based</strong>; MOT <code>frame</code> is <strong>1-based</strong>; no duplicate (frame, track_id) rows; at most top 100 detections per image.</li>
+<li>Ch 6 ONNX outputs must be read <strong>by name</strong> (<code>dets</code>, <code>labels</code>), not position (same shape).</li>
+<li>Ch 6 MOT scorer: <strong>IoU ≥ 0.5</strong>, class-agnostic; a misplaced box costs FP + FN.</li>
+<li>RF-DETR expects <strong>ImageNet-normalised</strong> input; the Ch 8/9 CNNs have normalisation <strong>inside</strong> the graph (feed raw [0,1]).</li>
+<li>Ch 8: ranking uses <code>priority_score</code> only, ties broken <strong>pessimistically</strong>; budgets k = max(1, round(N × budget)), so <strong>test k = 1 (1%) and 6 (5%)</strong>.</li>
+<li>Ch 9: the trainer stores the wake threshold <strong>inside the ONNX</strong>; <code>wake_triggered</code> must equal <code>sound_class == "drone_buzz"</code> (true for every labelled clip).</li>
+<li>Test labels are absent: evaluators <strong>can't</strong> score test. Never try to "check" test.</li>
+<li>Ch 8/9 trainers default to CUDA else CPU: pass <code>--device mps</code> on Apple silicon.</li>
+<li>Voyager SDK: Linux (Ubuntu 22.04+) or Windows <strong>via WSL2</strong> only; <strong>not macOS</strong>.</li>
+<li>Ch 6 test predictions: <code>predict_onnx_baseline.py detect --split test</code> works (the test COCO file lists all 328 images with 0 annotations). <code>predict ... mot</code> writes <strong>all 8</strong> sequences (valid + test) by default.</li>
+<li><code>train_rfdetr.py</code> expects a dataset folder with <strong><code>train/</code>, <code>valid/</code> and <code>test/</code></strong>, each with <code>_annotations.coco.json</code>. Keep that structure when building the tiled dataset, and <strong>don't use <code>--run-test</code></strong> (test has no labels).</li>
+</ul>
+<hr />
+<h2 id="1-the-project-in-one-minute">1. The project in one minute</h2>
+<p><strong>Siesta</strong> is an edge sensor node that finds small drones while spending as little compute, attention and bandwidth as possible. It <strong>naps until there's real trouble</strong>:</p>
+<ol>
+<li><strong>Listen</strong> (Challenge 9). A tiny acoustic model is always on. Camera off unless it hears a drone. <em>Eyes closed, ears open.</em></li>
+<li><strong>Look</strong> (Challenge 6). When woken, the camera detects and tracks aircraft. Even here it <strong>"peeks before it stares"</strong>: cheap motion detection points to where to look, and the detector examines only those spots closely.</li>
+<li><strong>Send</strong> (Challenge 8). Over a weak link, only the top 1% or 5% of frames go out, ranked by priority. <strong>It ranks clips, not frames</strong>, matching how the labels were made.</li>
+</ol>
+<p>All three run on the <strong>Axelera Embedded 110m</strong> (Metis chip, 1 GB memory), measured on real hardware in the Spectrum Room.</p>
+<p><strong>Tagline:</strong> "We nap so you don't have to." <strong>Opening hook [verified via news reports]:</strong> on 3 Feb 2020 a drone sighting stopped all flights at Madrid-Barajas between about 12:30 and 14:30, siesta time. 26 flights were rerouted, and the Civil Guard later found no proof the drone existed. Siesta's answer: confirm it (track + evidence frames) or rule it out ("reopen the runway").</p>
+<p><strong>Sponsor endorsement [verified]:</strong> the Ch 9 kit's own "Ideas to Win" lists a <strong>two-stage cascade</strong>: wake with the acoustic model, then verify on the paired video with the Ch 6 RF-DETR detector. The kit also notes drone rotors have <strong>narrowband harmonic signatures</strong>, and that <strong>9 training clips have a drone that's heard but not seen</strong> ("the ears catch what the eyes miss").</p>
+<p><strong>Naming trap [verified]:</strong> inside the kits the numbering differs. <strong>Ch 6 = "Challenge 1"</strong> (<code>challenge-1-cuas-tracking</code>), <strong>Ch 8 = "Challenge 4"</strong> (<code>challenge-4-edge-triage</code>), <strong>Ch 9 = "Challenge 5"</strong> (<code>challenge-5-acoustic-visual-cuas</code>). Always say which numbering you mean.</p>
+<hr />
+<h2 id="2-verified-facts-from-the-kits">2. Verified facts from the kits</h2>
+<h3 id="ch-6-detection-tracking-kit-challenge-1">Ch 6: detection + tracking (kit "Challenge 1")</h3>
+<ul>
+<li><strong>Classes (0-based):</strong> <code>0 drone_air</code>, <code>1 airplane</code>, <code>2 helicopter</code>.</li>
+<li><strong>Data:</strong> train 859 images (from <strong>14 clips only</strong>), valid 422 (8 clips), test 328 (7 clips, labels held out). Negatives in all splits. Splits are leak-free by clip. 200 calibration images (train-only, 384×384).</li>
+<li><strong>Small targets dominate [verified]:</strong> 270 of 387 valid boxes are smaller than 32×32 px; median box area is about 308 px².</li>
+<li><strong>Tracking sequences:</strong> 8 MP4s at 30 fps. <strong>Valid = seq_0001–0004</strong> (GT available), <strong>test = seq_0005–0008</strong> (GT held out). <strong>Each valid sequence contains exactly one object, present in every frame [verified].</strong></li>
+</ul>
+<table class="stack">
+<thead>
+<tr>
+<th>seq</th>
+<th>resolution</th>
+<th>target</th>
+<th>median box</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0001</td>
+<td>720×1278</td>
+<td>helicopter</td>
+<td>211×110 px</td>
+</tr>
+<tr>
+<td>0002</td>
+<td>352×640</td>
+<td>airplane</td>
+<td>32×24 px</td>
+</tr>
+<tr>
+<td>0003</td>
+<td>1920×1080</td>
+<td>drone</td>
+<td><strong>10×11 px</strong></td>
+</tr>
+<tr>
+<td>0004</td>
+<td>1080×1920</td>
+<td>drone</td>
+<td><strong>7×7 px</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Test sequences may differ (e.g. multiple objects), so <strong>never hard-code "one object".</strong>
+- <strong>Recommended model:</strong> RF-DETR <strong>Nano at 384×384</strong>. The kit ships <strong>no trained weights [verified]</strong>, so we train it ourselves (<code>train_rfdetr.py</code>, which downloads pretrained weights). <strong>YOLO/ultralytics are not used in this challenge.</strong>
+- <strong>Why the baseline fails on tiny drones [our analysis]:</strong> resizing a 1920 px frame to 384 shrinks a 7 px drone to about 1.4 px. <strong>Native-resolution tiles/crops are essential.</strong>
+- <strong>Baseline (1-epoch smoke test, CPU ONNX):</strong> mAP@50 0.447, mAP@50:95 0.293, small_AP50 0.506. Tracking <strong>MOTA −0.013, IDF1 0.248</strong>, continuity 0.432, 6 ID switches. Baseline tracker: IoU matching at 0.25, score threshold 0.25.
+- <strong>Scorer facts [verified from code]:</strong>
+  - Tracking is class-agnostic, with a <strong>per-frame IoU ≥ 0.5</strong> match.
+  - MOTA = 1 − (FN + FP + IDSW) / GT.
+  - <strong>A box in the wrong place costs 2 (a false positive and a missed object); outputting nothing costs 1.</strong>
+  - IDF1 also counts every predicted row.
+  - Continuity = share of GT frames covered.
+- <strong>Formats [verified]:</strong>
+  - <code>preds.json</code>: list of <code>{"image_id": int, "category_id": 0-based int, "bbox": [x,y,w,h], "score": 0..1}</code>, top 100 per image.
+  - <code>pred_mot/seq_XXXX.txt</code>: rows <code>frame(1-based),track_id,x,y,w,h,conf,class_id(1-based),1.0</code>, with no duplicate (frame, track_id).
+- <strong>Proposed judging weights:</strong> Detection 40% (mAP@50:95, small_AP@50) · Tracking 40% (MOTA, IDF1, continuity) · Edge efficiency 20% (Metis throughput, memory fit &lt; 1 GB).
+- <strong>Metis reality [verified]:</strong> full RF-DETR uses a GridSample deformable-attention tail. The kit's <strong>backbone-only export</strong> (<code>features [1,256,24,24]</code>) is the Metis starting point; the <strong>decoder must run on the host and be wired up by us</strong>. No compiled Metis baseline exists. ONNX outputs must be <strong>indexed by name</strong> (<code>dets</code>, <code>labels</code>), because both have shape <code>[1,300,4]</code>.</p>
+<h3 id="ch-8-edge-triage-kit-challenge-4">Ch 8: edge triage (kit "Challenge 4")</h3>
+<ul>
+<li><strong>Data:</strong> 947 frames / 282 clips; train 698 (212 clips), valid 138 (41), test 111 (29). Mostly <strong>ground-level battlefield footage</strong> (train perspective: 622 ground, 42 from_drone, 28 other, 6 of_drone). Scene tags: armored_vehicle, vehicle, person, drone (117 train frames), explosion_smoke, trench_building. RGB/night; one thermal frame in valid.</li>
+<li><strong>Labels are clip-level [verified]:</strong> every frame in a clip has identical keep/priority labels (0 of 41 valid clips differ), and <strong>test rows include <code>video_id</code> [verified]</strong>.</li>
+<li><strong>Scoring [verified from code]:</strong></li>
+<li>Rank by <code>priority_score</code>; ties are broken pessimistically.</li>
+<li>Budget k = max(1, round(N × budget)). <strong>On test (N = 111): k = 1 for the 1% budget and k = 6 for 5%</strong>, so the 1% score is effectively all-or-nothing.</li>
+<li>"High" = keep and priority ≥ 0.7.</li>
+<li>Spearman rank correlation is also reported.</li>
+<li><strong>Baseline (2-epoch smoke):</strong> capture@1% <strong>0.0</strong>, capture@5% 0.286, <strong>Spearman −0.157</strong> (worse than random). The trainer uses MSE on priority with <strong>no augmentation</strong> [verified].</li>
+<li><strong>Format:</strong> JSONL <code>{"id": str, "triage_keep": bool, "priority_score": float}</code>, one line per GT id.</li>
+<li><strong>Proposed weights:</strong> budget capture 55% · Spearman 25% · Metis INT8 throughput/power/footprint 20% (<strong>bonus for 100% on-chip execution and for temporal clip dedup</strong>).</li>
+</ul>
+<h3 id="ch-9-acoustic-wake-kit-challenge-5">Ch 9: acoustic wake (kit "Challenge 5")</h3>
+<ul>
+<li><strong>Data:</strong> 62 five-second clips (16 kHz WAV + synced 30 fps MP4 + 224×224 spectrogram PNG). Train 48 (15 drone), valid 8 (2 drone), test 6. 48 calibration spectrograms (train-only).</li>
+<li><strong>Labels [verified]:</strong> <code>has_drone_audio == (sound_class == "drone_buzz")</code> for <strong>every</strong> train and valid clip.</li>
+<li><strong>Baseline (2-epoch smoke):</strong> wake F1 0.80, class accuracy 0.50. The trainer has <strong>no augmentation</strong> [verified] and supports MobileNetV3-Small or ResNet-18. The wake threshold is chosen on valid and stored in the ONNX model.</li>
+<li><strong>Format:</strong> JSONL <code>{"id": str, "wake_triggered": bool, "sound_class": "drone_buzz"|"vehicle_mechanical"|"explosion"|"ambient_outdoor"}</code>.</li>
+<li><strong>Scorer:</strong> wake F1, class accuracy, optical duty cycle. Its key <code>energy_savings_pct</code> is <strong>not measured energy</strong>; call it "camera-off time".</li>
+<li><strong>Proposed weights:</strong> wake F1 40% · class accuracy 25% · camera-off proxy 20% · Metis latency/footprint 15%.</li>
+</ul>
+<h3 id="environment-all-three-kits">Environment (all three kits)</h3>
+<ul>
+<li>Python ≥ 3.11, <code>uv</code> (<code>uv venv &amp;&amp; uv pip install -e .</code> in each <code>starter-kit/</code>). Ch 6 tracking needs <code>ffmpeg</code>.</li>
+<li><strong>Metis compile:</strong> Voyager SDK <code>axcompile -i &lt;model.onnx&gt;</code> plus a <code>--transform preprocess.py</code> <strong>we write</strong> (implementing <code>get_preprocess_transform(image)</code>: RGB resize, float32 CHW, [0,1] scaling, and <strong>ImageNet normalisation only for RF-DETR</strong>, since the CNNs already include it in the graph). Calibrate only with each kit's calibration folder.</li>
+</ul>
+<hr />
+<h2 id="3-what-we-tested-ourselves-verified-sat-morning">3. What we tested ourselves [verified, Sat morning]</h2>
+<ol>
+<li><strong>Motion proposals on Ch 6 valid sequences.</strong> Camera-motion-compensated three-frame differencing (<code>early_probes/motion_probe.py</code>) finds the target in <strong>99/150, 68/72, 145/150 and 124/150 frames</strong> (seq 1–4). That includes the 7–10 px drones.</li>
+<li>It also produces <strong>about 34, 14, 1,151 and 197 candidates per frame</strong>: moving trees and compression noise.</li>
+<li>Its boxes are poor on tiny targets (median IoU 0.13 and 0.29 on seq 3 and 4).</li>
+<li>A naive motion-only tracker scores <strong>MOTA −0.56, IDF1 0.17</strong>, worse than the baseline.</li>
+<li><strong>Conclusion:</strong> motion is an excellent <em>proposal</em> source but <strong>must be confirmed and re-boxed by the detector</strong>. Never ship motion alone.</li>
+<li><strong>Full test suite (Sat 12:05): 15/15 PASS.</strong> Details in <code>docs/3_TEST_REPORT_results_and_coverage.md</code>. New finding: motion windows contain the 7 px drone of seq 4 in only <strong>19%</strong> of non-sweep frames (12 windows; 1% with 6). Seq 2: 97%, seq 3: 95%. <strong>Decision: use <code>detect_video.py --mode full</code> for scored MOT files; use motion mode (default now 12 windows) for the efficiency story</strong> (about 48% fewer detector calls).</li>
+<li><strong>Physics-only drone-sound check on Ch 9.</strong> Harmonicity/peakiness features (<code>early_probes/harmonic_probe.py</code>) point the right way but alone reach only <strong>leave-one-out wake F1 0.31</strong> on train+valid.</li>
+<li><strong>Conclusion:</strong> use them at most as an <strong>auxiliary</strong> feature. The learned model stays primary.</li>
+</ol>
+<hr />
+<h2 id="3b-hardware-plan-decided-sat-1110">3b. Hardware plan (decided Sat 11:10)</h2>
+<p><strong>Key constraint [verified, Axelera docs]:</strong> the Voyager SDK installs on <strong>Linux (Ubuntu 22.04+)</strong>, and on Windows only through <strong>WSL2</strong>. <strong>macOS isn't listed.</strong> So <strong>no Mac can compile for Metis.</strong> Compilation and benchmarking happen on the <strong>Axelera host in the Spectrum Room</strong> (or a teammate's Linux/WSL2 laptop, if the compiler-only <code>axelera-devkit</code> install works without a Metis card, which the docs leave unclear).</p>
+<table class="stack">
+<thead>
+<tr>
+<th>Machine</th>
+<th>Who</th>
+<th>Used for</th>
+<th>Fallback</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>M4 Max MacBook Pro, 48 GB</strong></td>
+<td><strong>P1 only</strong></td>
+<td>Ch 6 RF-DETR Nano training on MPS; tiled inference; ONNX export</td>
+<td>Free cloud NVIDIA GPU (Colab / Kaggle) for detector training if 1-epoch timing says MPS is too slow</td>
+</tr>
+<tr>
+<td>P2 laptop</td>
+<td>P2</td>
+<td>Tracker development (CPU is enough: ≤ 150-frame sequences); <code>ffmpeg</code>, OpenCV; uses P1's latest ONNX</td>
+<td>Any laptop</td>
+</tr>
+<tr>
+<td>P3 laptop</td>
+<td>P3</td>
+<td>Ch 9 + Ch 8 training and cross-validation (tiny CNNs: CPU is fine; <code>--device mps</code> if Apple silicon)</td>
+<td>Any laptop</td>
+</tr>
+<tr>
+<td><strong>The team's Windows laptop → P4</strong></td>
+<td>P4</td>
+<td><strong>WSL2 + Ubuntu 22.04</strong> for the Voyager SDK route (the only Windows path Axelera documents); SSH to the Axelera host; optional compiler-only install; eval scripts; demo editing; slides</td>
+<td>If WSL2 can't be enabled (admin/virtualisation blocked), work directly on the Axelera host</td>
+</tr>
+<tr>
+<td><strong>Axelera Embedded 110m + its host PC</strong> (Spectrum Room)</td>
+<td>P4 (+P1 for Ch 6)</td>
+<td><code>axcompile</code>, INT8 calibration, on-device accuracy, latency, memory. <strong>Also runs our host-side tail</strong> (Ch 6 decoder + tracker), because Ch 6's edge score is <em>end-to-end</em> throughput, so the host-tail time must be measured on that host, not on the Mac</td>
+<td>Report CPU ONNX Runtime numbers, clearly labelled</td>
+</tr>
+<tr>
+<td>Phones</td>
+<td>P4</td>
+<td>Demo capture (video + audio, 30 fps) if a real-drone recording is allowed; hotspot backup for internet</td>
+<td>Recorded dataset demo</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Bring or get today:</strong>
+- USB stick or SSD (≥ 16 GB) to move data and models to the Axelera host if the network is slow.
+- USB-C→HDMI adapter for the pitch.
+- Chargers and a power strip.
+- Headphones, to listen to Ch 9 clips in the kit viewer.</p>
+<p><strong>Not needed:</strong> 3D printers, Fire Point equipment, the Alta Ares simulators. Featherless is optional, as a coding assistant only, never inside the pipeline.</p>
+<p><strong>Memory fit [estimate, verify on device]:</strong> Ch 6 FP32 ONNX is 102.7 MB (full) / 89.0 MB (backbone); INT8 should be roughly a quarter of that. Ch 8 and Ch 9 are about 3.6 MB each. All three should fit in the 1 GB card memory at once, which is part of the "one chip, three models" claim, so <strong>measure it</strong>.</p>
+<p><strong>Bottlenecks to manage:</strong>
+1. <strong>One fast machine:</strong> the M4 Max is reserved for Ch 6 training. Everyone else works on CPU.
+2. <strong>Shared Metis devices:</strong> book slots early, and arrive with ONNX + <code>preprocess.py</code> + calibration folder ready.
+3. <strong>Venue Wi-Fi:</strong> install PyTorch, rfdetr and the RF-DETR pretrained weights <strong>now</strong> on every machine; use a phone hotspot if slow.
+4. <strong>Compile risk:</strong> CNNs first; the RF-DETR backbone has its own cut line at 14:00.</p>
+<p><strong>Every teammate, report now in the team chat:</strong> laptop chip, RAM, OS (macOS / Windows / Linux), and whether Python 3.11+ and <code>ffmpeg</code> are installed.</p>
+<hr />
+<h2 id="4-the-approach-whats-unusual-and-why-its-feasible">4. The approach: what's unusual, and why it's feasible</h2>
+<table class="stack">
+<thead>
+<tr>
+<th>#</th>
+<th>Idea</th>
+<th>Where</th>
+<th>Why it works (evidence)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A</td>
+<td><strong>Zoom where it matters:</strong> train and infer on native-resolution 384 px tiles/crops instead of shrinking whole frames</td>
+<td>Ch 6 detection</td>
+<td>Tiny boxes vanish when downscaled 3–5× (Sections 2–3). Tiles keep 7 px drones at 7 px.</td>
+</tr>
+<tr>
+<td>B</td>
+<td><strong>Peek before you stare:</strong> motion proposals → detector crops around them → tracker. A slow full-frame tile sweep still runs so motionless targets aren't missed.</td>
+<td>Ch 6 tracking</td>
+<td>Motion finds the targets (Section 3), the detector removes clutter and fixes boxes, and compute is spent only where something moved. That's Siesta inside Stage 2 too.</td>
+</tr>
+<tr>
+<td>C</td>
+<td><strong>Scorer-aware output policy:</strong> only emit a box when the track is confirmed and well localised; fill short gaps only between confident detections</td>
+<td>Ch 6 tracking</td>
+<td>The scorer charges 2 for a misplaced box and 1 for silence. Baseline MOTA is negative because of false positives.</td>
+</tr>
+<tr>
+<td>D</td>
+<td><strong>Two thresholds:</strong> low for COCO detections (mAP rewards recall), strict for MOT output</td>
+<td>Ch 6</td>
+<td>Each metric rewards a different behaviour (scorer code).</td>
+</tr>
+<tr>
+<td>E</td>
+<td><strong>Rank clips, not frames:</strong> pool predictions across each <code>video_id</code>, plus a tiny per-frame tie-breaker</td>
+<td>Ch 8</td>
+<td>Labels are clip-constant and test rows carry <code>video_id</code> (verified). The kit offers a bonus for temporal clip dedup.</td>
+</tr>
+<tr>
+<td>F</td>
+<td><strong>Train for order:</strong> a pairwise/listwise ranking loss on priority (keeping the other heads as auxiliary), image augmentation, clip-grouped cross-validation</td>
+<td>Ch 8</td>
+<td>Eval is ranking-based. Baseline Spearman is −0.16, using MSE with no augmentation.</td>
+</tr>
+<tr>
+<td>G</td>
+<td><strong>One decision, consistent outputs:</strong> <code>wake_triggered = (sound_class == "drone_buzz")</code>, from one calibrated model, so wake and class never contradict</td>
+<td>Ch 9</td>
+<td>Verified label identity on all 56 labelled clips.</td>
+</tr>
+<tr>
+<td>H</td>
+<td><strong>Sound-mixing augmentation + cross-validation:</strong> mix drone audio over ambience at varying loudness, time shifts, gain, spectrogram masking; pick settings by CV over train+valid; compare MobileNetV3-S vs ResNet-18</td>
+<td>Ch 9</td>
+<td>The trainer has no augmentation. 8 valid clips (2 positive) overfit easily, as the kit itself warns.</td>
+</tr>
+<tr>
+<td>I</td>
+<td><strong>One chip, three models, one cost ledger:</strong> compile the Ch 9 and Ch 8 CNNs first (easy, fully on-chip), then the Ch 6 backbone with a host decoder. Measure latency, memory and INT8 accuracy drop for each.</td>
+<td>All</td>
+<td>15–20% of each challenge's proposed score is Metis efficiency, and there are no compiled baselines, so few teams will have these numbers.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="priority-ranking-and-scope-decided-sat-1100-after-review">Priority ranking and scope (decided Sat 11:00 after review)</h3>
+<ul>
+<li><strong>Priority 1, Ch 6 (two people, P1 + P2):</strong> win it outright. Most teams, most points, biggest headroom. Tiled detection (A) + motion proposals confirmed by the detector (B) + scorer-aware output policy (C/D).</li>
+<li><strong>Priority 2, Ch 9 (P3, first):</strong> fully on-chip, and the sponsor's own recommended cascade. Ideas G + H.</li>
+<li><strong>Priority 3, Ch 8 (P3, second):</strong> cheap, 1 competing team. <strong>Only</strong> clip pooling (E) + ranking loss (F) + a Metis benchmark. Nothing more.</li>
+<li><strong>Cut:</strong> physics sound features (tested weak); second seeds and extra-long Ch 6 runs unless the GPU is idle; Ch 6 host decoder if the backbone doesn't compile by 14:00.</li>
+<li><strong>Ambitious demo (optional, needs organiser permission and their safety rules):</strong> film and record a <strong>real drone</strong> at the venue (Alta Ares has RC drones) and run Siesta on it on the Metis chip. Fallback: the recorded cascade on Ch 9 paired clips.</li>
+</ul>
+<p><strong>Deliberately not doing:</strong> hard-coding one object per sequence, tuning on test, claiming energy savings, claiming Ch 6 detections feed Ch 8 ranking (Ch 8 is ground battlefield footage), and appearance re-identification for tiny targets.</p>
+<hr />
+<h2 id="5-architecture">5. Architecture</h2>
+<pre><code>mic (5 s windows) ─► [Ch 9 wake model on Metis] ─ no ─► camera stays off (log camera-off time)
+                                     └ yes ─► camera on
+camera frames ─► [motion proposals, host] ─► crops ─► [Ch 6 RF-DETR: backbone on Metis + host decoder]
+                 [slow full-frame tile sweep] ─┘                 │
+                                                                 ▼
+                                   [tracker: camera-motion comp + Kalman + confirm/suppress + gap fill]
+                                                                 │
+                                   track messages (always, tiny) ┼─► operator / map
+frames ─► [Ch 8 triage model on Metis] ─► clip-pooled priority ─► top 1% / 5% uplink
+</code></pre>
+<p><strong>Scoring:</strong> each challenge is scored separately (Ch 6 COCO + MOT, Ch 8 JSONL, Ch 9 JSONL). The cascade is the <strong>demo and pitch layer</strong>, built on Ch 9's paired video.</p>
+<p><strong>Track message contract (for the demo):</strong> <code>{frame, track_id, class, bbox_xywh, confidence, timestamp}</code>.</p>
+<hr />
+<h2 id="6-roles">6. Roles</h2>
+<p><strong>GPU priority (we have one GPU resource; adjust if we have more):</strong>
+1. P1's Ch 6 detector training comes first.
+2. P3's Ch 8/9 cross-validation runs go in the gaps. These small CNNs also train on a laptop CPU if the GPU is busy.
+3. Nobody leaves an idle job holding the GPU. Log every run in the experiment log.</p>
+<h3 id="p1-ch-6-detection-zoom-where-it-matters">P1: Ch 6 detection ("zoom where it matters")</h3>
+<ol>
+<li>Set up the environment on the GPU machine and run the kit's quickstart end to end: <code>train_rfdetr.py --model nano --epochs 20</code> → export → predict → evaluate. That gives the <strong><code>v0</code> safety submission with a properly trained baseline</strong> (not the 1-epoch smoke model). Record time per epoch and GPU memory use. Start with the kit defaults (batch 8, grad-accum 2); if memory runs out, halve the batch and double grad-accum.</li>
+<li><strong>Build a tiled training set:</strong> native-resolution 384×384 crops around every box (with jitter) plus random negative crops from negatives and backgrounds. Keep COCO format, so <code>train_rfdetr.py</code> works unchanged.</li>
+<li><strong>Train RF-DETR Nano on the crops</strong> (the kit's recommended deployment model; keep Nano as the deliverable). With the GPU, run a clean comparison, all scored with the kit evaluator on valid:</li>
+<li>(a) baseline, whole frames;</li>
+<li>(b) tiles;</li>
+<li>(c) tiles + more epochs (e.g. 40–60);</li>
+<li>if time allows, (d) a second seed of the best setting.
+   Keep whichever wins. Launch (b) as soon as the tiled set exists.</li>
+<li><strong>Tiled inference</strong> for COCO output: overlapping 384 tiles at native resolution plus one downscaled whole-frame pass for large aircraft. Merge tiles with class-wise NMS. Keep top 100 per image with a <strong>low</strong> score threshold (idea D).</li>
+<li>Evaluate with the kit's <code>evaluate_submissions.py detect</code> only.</li>
+<li><strong>Hand to P2:</strong> a function <code>detect(crop_or_frame) → [(cls, score, box)]</code>. <strong>Hand to P4:</strong> the exported ONNX (full + backbone).</li>
+</ol>
+<h3 id="p2-ch-6-tracking-peek-before-you-stare-scorer-aware-policy">P2: Ch 6 tracking ("peek before you stare" + scorer-aware policy)</h3>
+<ol>
+<li>Start from <code>early_probes/motion_probe.py</code> (motion proposals with camera-motion compensation).</li>
+<li><strong>Proposal → confirm:</strong> run P1's detector on crops around motion candidates (merge overlapping candidates; cap the count per frame by motion strength) <strong>plus</strong> a periodic full-frame tile sweep.</li>
+<li><strong>Tracker:</strong> camera-motion-compensated Kalman filter; center-distance association for tiny boxes (IoU is unreliable at 7 px); confirm after N consistent hits; delete after M misses.</li>
+<li><strong>Output policy (idea C):</strong> emit only confirmed tracks with confident boxes. Smooth box size (keep the detector's box, not the motion blob). Interpolate short gaps only between confident detections. Use a strict threshold.</li>
+<li><strong>Tune with leave-one-sequence-out over the 4 valid sequences.</strong> Report per-sequence numbers, never just the best one.</li>
+<li>Evaluate only with <code>evaluate_submissions.py mot --split valid</code>. <strong>Write test MOT files for seq_0005–0008</strong> with the same settings.</li>
+</ol>
+<h3 id="p3-ch-9-and-ch-8-the-two-small-cnns">P3: Ch 9 and Ch 8 (the two small CNNs)</h3>
+<p><strong>Ch 9:</strong>
+1. Baseline run; log wake F1, accuracy, duty cycle.
+2. <strong>Augmentation (idea H):</strong> waveform mixing (drone + ambience/vehicle at random SNR), time shift, gain, then regenerate log-mel spectrograms <strong>exactly like the kit's PNGs</strong> (check the kit's spectrogram parameters; if unclear, augment the PNGs with time/frequency masking instead).
+3. <strong>Consistency (idea G):</strong> a single decision drives both outputs.
+4. Select settings with <strong>cross-validation over all 56 labelled clips</strong>. Then set the final threshold, document it, and store it in the ONNX the way the starter does. (Physics features are cut; see Section 4.)</p>
+<p><strong>Ch 8:</strong>
+1. Baseline run.
+2. <strong>Ranking loss</strong> on priority (pairwise or ListNet) plus the existing auxiliary heads.
+3. Image augmentation (flips, crops, colour jitter, night-like darkening).
+4. <strong>Clip-grouped CV.</strong>
+5. <strong>Clip pooling at inference (idea E):</strong> mean or max of frame scores per <code>video_id</code>, plus a tiny frame-level tie-breaker. Compare pooled vs. unpooled on CV and keep the winner.
+6. Remember k = 1 at the 1% budget on test: make sure the single top slot is the most confident clip.</p>
+<p><strong>Hand to P4:</strong> both ONNX files (static shapes, opset 17, as the starters export). On the Mac, run both trainers with <code>--device mps</code> (or the CPU if the GPU is busy with Ch 6).</p>
+<h3 id="p4-metis-integration-pitch-safety-owner">P4: Metis, integration, pitch (safety owner)</h3>
+<ol>
+<li><strong>Spectrum Room:</strong> confirm the hardware and SDK version, book device time, and fill in Section 0.</li>
+<li><strong>Compile order:</strong> Ch 9 CNN → Ch 8 CNN → Ch 6 backbone (host decoder separately).</li>
+<li>Write <code>preprocess.py</code> per model (Section 2 rules). INT8-calibrate with each kit's calibration folder <strong>only</strong>.</li>
+<li><strong>Cost ledger:</strong> for every model, record FP32 vs INT8 accuracy on valid, device latency, throughput and memory. <strong>Label every number with where it ran</strong> (Metis vs. laptop CPU ONNX Runtime).</li>
+<li><strong>Format checks:</strong> run each kit's evaluator before every submission. Keep tagged versions <code>v0/v1/v2</code>.</li>
+<li><strong>Cascade demo</strong> on Ch 9 paired clips: audio wake timeline → camera on → P1/P2 boxes with IDs → P3 triage strip with an uplink-bytes counter. Record it as a video.</li>
+<li>Own the slides and rehearsals.</li>
+</ol>
+<hr />
+<h2 id="7-checkpoints">7. Checkpoints</h2>
+<table class="stack">
+<thead>
+<tr>
+<th>When</th>
+<th>Must be true</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Sat 12:00, Gate 0</strong></td>
+<td>Every box in Section 0a ticked, or given an owner and a fallback.</td>
+</tr>
+<tr>
+<td><strong>Sat 13:00</strong></td>
+<td>Valid baseline submissions for <strong>all three</strong> (Ch 6 COCO + MOT, Ch 8 JSONL, Ch 9 JSONL), scored with the kit evaluators and tagged <code>v0</code>. Ch 9 CNN compiled on Metis (or a written blocker).</td>
+</tr>
+<tr>
+<td><strong>Sat 14:00, cut line</strong></td>
+<td>If the Ch 6 backbone won't compile, stop and report Ch 6 on CPU ONNX Runtime INT8. Ch 8/9 stay the on-chip proof.</td>
+</tr>
+<tr>
+<td><strong>Sat 19:00</strong></td>
+<td>Tracker v1 beats baseline MOTA/IDF1 under leave-one-out. Ch 8/9 improved on CV. Cascade runs on ≥ 1 clip. Submissions <code>v1</code>.</td>
+</tr>
+<tr>
+<td>Sat afternoon</td>
+<td>Tiled detector run (b) launched on the GPU by about 14:00. Results by early evening feed P2's tracker.</td>
+</tr>
+<tr>
+<td>Sat night</td>
+<td>Best detector setting trained longer or with a second seed on the GPU. P3's final Ch 8/9 models trained. Pitch outline drafted.</td>
+</tr>
+<tr>
+<td><strong>Sun 11:00</strong></td>
+<td>Final test predictions <code>v2</code>, re-validated, submitted early (once deadlines are confirmed).</td>
+</tr>
+<tr>
+<td><strong>Sun 12:00</strong></td>
+<td>Feature freeze. Demo video recorded. Afternoon: slides and 3 timed rehearsals.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>If something has to give:</strong> reduce scope, never validity. The order is: Ch 6 Metis host decoder → Ch 6 extra training runs → Ch 8 ranking loss (keep pooling). <strong>Never</strong> drop a submission.</p>
+<hr />
+<h2 id="8-pitch-siesta">8. Pitch (Siesta)</h2>
+<ol>
+<li><strong>Hook:</strong> Barajas, 3 Feb 2020. Two hours closed at siesta time, 26 flights rerouted, a drone nobody could prove existed.</li>
+<li><strong>Problem:</strong> small drones are hard to see, and watching for them costs power, attention and bandwidth.</li>
+<li><strong>Siesta:</strong> eyes closed, ears open. Listen, then wake and peek, then stare, then send only what matters.</li>
+<li><strong>Demo video.</strong></li>
+<li><strong>Results vs. baseline</strong>, per challenge, with the counts behind them (small validation sets stated honestly).</li>
+<li><strong>One chip, three models:</strong> the cost ledger measured on the Axelera device.</li>
+<li><strong>What's different:</strong> tiles for tiny drones; motion proposals confirmed by the detector; a scorer-aware tracker; clip-level ranking; consistent wake/class decisions.</li>
+<li><strong>Back to Barajas:</strong> "drone confirmed, here's the track and three frames", or "no drone, reopen the runway".</li>
+<li><strong>Next:</strong> confirmed tracks feed a C2 / fleet planner (Challenge 4 link); field data that labels itself; dual use (airports, prisons, infrastructure).</li>
+</ol>
+<p><strong>Tone:</strong> the humour lives in the name, the tagline and the hook. Everything after slide 3 is rigorous. Don't call it a "defense system" (it detects and confirms). Lean on the Barajas story more than the siesta cliché unless a Spanish teammate presents.</p>
+<hr />
+<h2 id="9-rules-non-negotiable">9. Rules (non-negotiable)</h2>
+<ol>
+<li>Never tune on test. Use valid / cross-validation only.</li>
+<li>Calibration folders are for INT8 calibration only.</li>
+<li>Only the kits' own evaluators produce reportable numbers.</li>
+<li>Always keep a valid, tagged submission. Validate formats before uploading. Submit early.</li>
+<li>Every performance number states model, precision (FP32/INT8) and hardware (Metis vs CPU).</li>
+<li>No overclaiming: "camera-off time", not energy. Small test sets mean noisy scores, and we say so.</li>
+<li>Don't hard-code dataset quirks (e.g. one object per sequence).</li>
+<li>No secrets in the repo (Featherless and other keys in environment variables).</li>
+<li><strong>Experiment log row:</strong> <code>time | owner | challenge | change | config/commit | metric (eval script) | notes</code>.</li>
+</ol>
+<hr />
+<h2 id="10-decision-history-and-context-so-every-claude-knows-what-the-team-leads-chat-knows">10. Decision history and context (so every Claude knows what the team lead's chat knows)</h2>
+<ul>
+<li><strong>Event:</strong> EDTH Paris, 20–22 Nov 2026. Team of 4. About 24 hours of work from Sat 11:00. Pitch Sunday evening if preselected. Goal: win, as ambitiously as is feasible.</li>
+<li><strong>All 9 challenges were reviewed</strong> (full detail in <code>docs/4_ALL_CHALLENGES_reference.md</code>). Outcome:</li>
+<li><strong>Chosen: Ch 6 + Ch 8 + Ch 9 = "Siesta"</strong> (all Piotr Gryko / Axelera). They chain naturally (hear → look → send), and the Ch 9 kit itself recommends the acoustic → RF-DETR cascade. Low competition (4 / 1 / 3 teams at registration). Axelera hardware on site.</li>
+<li><strong>Ch 4 (Alta Ares Fleet Orchestration):</strong> not entered. No technical link (its only input is a scenario JSON); its kit is Python-stdlib-only with a Sunday 12:00 hand-in. Appears only as a "next step" in the pitch.</li>
+<li><strong>Ch 3 (Alta Ares Search &amp; Destroy):</strong> not entered. It's autonomous strike guidance, which the team's assistant (Claude) won't help develop.</li>
+<li><strong>Ch 5 (jet interceptor):</strong> infeasible (needs jet-engine facilities).</li>
+<li><strong>Ch 1 (Voice-to-Map):</strong> crowded (9 teams), no scorer.</li>
+<li><strong>Ch 2 (stabilised antenna):</strong> needs controls and CAD skills.</li>
+<li><strong>Ch 7 (RGB + thermal):</strong> good, but outside our chain.</li>
+<li><strong>Name and story:</strong> "Siesta", with "Eyes closed, ears open" and "We nap so you don't have to". <strong>Madrid hook:</strong> the Madrid-Barajas drone closure on 3 Feb 2020 (~12:30–14:30, 26 flights rerouted, drone never confirmed). Don't call it a "defense system"; it detects and confirms.</li>
+<li><strong>Hardware decided:</strong> M4 Max MacBook Pro 48 GB = the training machine (P1); the one Windows laptop = P4 (WSL2 for the Voyager SDK); the Axelera host in the Spectrum Room for compile and benchmarks; free Colab/Kaggle GPU as backup for detector training.</li>
+<li><strong>Tests run on Saturday morning (Section 3):</strong> motion proposals find the tiny Ch 6 drones but need detector confirmation (motion-only MOTA −0.56). The physics-only Ch 9 sound features are weak (LOO F1 0.31), so they were <strong>cut</strong>.</li>
+<li><strong>Corrections made along the way:</strong> an early idea to merge Ch 4 with Ch 6 was dropped (scored separately, no shared input). The Ch 4 repo turned out to be stdlib-only with no link-loss part. The physics wake check was downgraded after testing.</li>
+<li><strong>Scope review (Sat 11:00):</strong> a teammate's Claude flagged the plan as too broad. Resolution: <strong>Ch 6 is priority 1 (2 people)</strong>, Ch 9 priority 2, Ch 8 priority 3 (only clip pooling + ranking loss + Metis benchmark). Extras cut (Section 4).</li>
+<li><strong>Files in the team project:</strong> <code>docs/2_TEAM_BRIEF_plan_roles_checkpoints.md</code> (this file), <code>docs/4_ALL_CHALLENGES_reference.md</code> (all-challenge reference), <code>early_probes/motion_probe.py</code>, <code>early_probes/harmonic_probe.py</code>.</li>
+<li><strong>Code kit (Sat 11:50), <code>siesta/</code> in the project and <code>siesta_code.zip</code>; start with <code>siesta/README.md</code>:</strong></li>
+<li><strong>P1:</strong> <code>ch6_detection_tracking/build_tiled_dataset.py</code>, <code>ch6_detection_tracking/tiled_detect.py</code> (+ <code>ch6_detection_tracking/tiling.py</code>)</li>
+<li><strong>P2:</strong> <code>ch6_detection_tracking/detect_video.py</code> (full / motion modes), <code>ch6_detection_tracking/track.py</code>, <code>ch6_detection_tracking/synth_test.py</code></li>
+<li><strong>P3:</strong> <code>ch9_acoustic_wake/train_cv.py</code>, <code>ch9_acoustic_wake/predict_consistent.py</code>, <code>ch8_edge_triage/train_rank.py</code>, <code>ch8_edge_triage/pool_clips.py</code></li>
+<li><strong>P4:</strong> <code>metis_axelera_compile/preprocess_cnn.py</code>, <code>metis_axelera_compile/preprocess_rfdetr.py</code></li>
+<li><strong>Everyone:</strong> <code>check_submissions_before_upload.py</code>, which must print PASS before any upload.</li>
+</ul>
+<p>All of it was run end to end against the real kit data and <strong>scored with the kit evaluators</strong>. The test environment had no pretrained weights, so its model scores are meaningless; only the mechanics were verified. Extra dependency: <code>opencv-python</code>.</p></main></body></html>

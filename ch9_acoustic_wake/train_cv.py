@@ -7,7 +7,7 @@ Why (team brief ideas G + H):
   * Consistency: in every labelled clip, has_drone_audio == (sound_class == "drone_buzz").
     We fuse both heads: p = mean(sigmoid(wake_logit), softmax(class)[drone_buzz]);
     wake = p >= thr; class = drone_buzz if wake else best non-drone class.
-    -> outputs can never contradict each other. Use siesta/c9/predict_consistent.py to predict.
+    -> outputs can never contradict each other. Use ch9_acoustic_wake/predict_consistent.py to predict.
   * Spectrogram augmentation in tensor space (time axis = image width, frequency = height):
     time roll, gain shift, time/frequency masking, and mixing a non-drone clip into a clip
     with an element-wise max (log-mel approximation of adding sounds).
@@ -198,7 +198,7 @@ def main() -> None:
     onnx.save(mp, onnx_path)
     (args.out / "cv_report.json").write_text(json.dumps({"fused_threshold": thr, "oof": m, "args": vars(args)},
                                                        default=str, indent=2))
-    print(f"Saved {onnx_path} (fused wake_threshold={thr}). Predict with siesta/c9/predict_consistent.py")
+    print(f"Saved {onnx_path} (fused wake_threshold={thr}). Predict with ch9_acoustic_wake/predict_consistent.py")
 
 
 if __name__ == "__main__":

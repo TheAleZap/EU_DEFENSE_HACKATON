@@ -1,0 +1,459 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Siesta team memory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: calm team plan document
+   IDEA: an architect's spec booklet
+   PICTURE: the ranking table is the key graphic
+   COLOUR and TYPE: white, black, concrete planes, one yellow mark; Hanken Grotesk
+   LAYOUT: one readable column, section links row */
+:root{color-scheme:light dark;--bg:light-dark(#ffffff,#1a1a19);--ink:light-dark(#111,#ececea);--mute:light-dark(#55554f,#a9a9a3);--plane:light-dark(#ececea,#262624);--line:light-dark(#d8d8d4,#3a3a37);--acc:#ffe600}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html{scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16.5px/1.6 "Hanken Grotesk",system-ui,sans-serif;overflow-x:clip}
+header{background:var(--plane);padding:clamp(28px,4vw,56px) max(5vw,16px) 20px}
+header .t{max-width:980px;margin:0 auto}
+.scroll{display:flex;gap:6px 18px;flex-wrap:nowrap;overflow-x:auto;max-width:980px;margin:18px auto 0;padding-bottom:6px;font-size:14px}
+.scroll a{flex:none;color:var(--ink);text-decoration:none;border-bottom:2px solid transparent;padding:6px 0}
+.scroll a:hover,.scroll a:focus-visible{border-color:var(--acc);outline:none}
+@media(min-width:900px){header{position:sticky;top:-140px;z-index:2}}
+main{max-width:980px;margin:0 auto;padding:12px max(5vw,16px) 64px}
+h1{font-size:clamp(30px,4.6vw,46px);line-height:1.05;font-weight:700;margin:0;text-wrap:balance}
+h2{font-size:26px;line-height:1.15;margin:52px 0 14px;padding-top:14px;border-top:1px solid var(--ink);text-wrap:balance}
+h3{font-size:19px;margin:34px 0 8px}
+p,li{max-width:72ch}
+blockquote{margin:18px 0;padding:14px 18px;background:var(--plane);border-left:6px solid var(--acc)}
+blockquote p{margin:6px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:14px 0}
+th,td{text-align:left;vertical-align:top;padding:9px 10px;border-bottom:1px solid var(--line)}
+th{font-weight:700;border-bottom:2px solid var(--ink)}
+code{font-size:.92em;background:var(--plane);padding:1px 5px;border-radius:3px;overflow-wrap:anywhere}
+a{color:inherit}
+hr{border:0;border-top:1px solid var(--line);margin:32px 0}
+@media(max-width:600px){table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-block:10px;border-bottom:1px solid var(--line)}.stack td{display:flow-root;border:0;padding:3px 0;padding-inline-start:8em;text-align:start}.stack td::before{content:attr(data-l);float:inline-start;width:7.5em;margin-inline-start:-8em;font-weight:700;white-space:normal}.stack td:empty{display:none}}
+</style><script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script></head><body>
+<header><div class="t"><h1 id="siesta-team-memory-complete-shared-context">SIESTA: Team Memory (complete shared context)</h1></div><nav class="scroll"><a href="#1-the-situation-in-one-paragraph">1. The situation in one paragraph</a><a href="#2-team-hardware-roles">2. Team, hardware, roles</a><a href="#3-what-the-team-was-given-sources">3. What the team was given (sources)</a><a href="#4-decision-log-chronological-with-reasons">4. Decision log (chronological, with reasons)</a><a href="#5-the-siesta-approach-ideas-ai-our-view-partly-verified">5. The Siesta approach (ideas A–I) [our view, partly verified]</a><a href="#6-key-kit-facts-full-list-in-docs2_team_brief_plan_roles_checkpointsmd-section-2-verified">6. Key kit facts (full list in docs/2_TEAM_BRIEF_plan_roles_checkpoints.md Section 2) [verified]</a><a href="#7-code-kit-map-repo-layout">7. Code kit map (repo layout)</a><a href="#8-every-measurement-so-far-none-are-real-model-scores">8. Every measurement so far (none are real model scores)</a><a href="#9-plan-from-here-sat-1205-onwards">9. Plan from here (Sat 12:05 onwards)</a><a href="#10-open-questions-unconfirmed-owner-p4-unless-stated">10. Open questions [unconfirmed] (owner P4 unless stated)</a><a href="#11-rules-every-teammate-and-every-claude-follows">11. Rules every teammate and every Claude follows</a><a href="#12-glossary">12. Glossary</a></nav></header>
+<main>
+<blockquote>
+<p><strong>For Claude reading this file:</strong> this is the complete memory of the team lead's working session with Claude (Fri 20 Nov 21:50 → Sat 21 Nov 12:05, Paris time). Treat it as what you already know. It records what the team was given, what was researched and verified, every decision and why, what was built and tested, and what's still open. Labels: <strong>[verified]</strong> = checked against official files, code or docs; <strong>[test]</strong> = measured by our own tests; <strong>[unconfirmed]</strong> = not yet known; <strong>[our view]</strong> = a judgement. Never present [unconfirmed] or synthetic numbers as facts. If something isn't here, in <code>docs/2_TEAM_BRIEF_plan_roles_checkpoints.md</code>, or in the official kits, say you don't know.</p>
+<p><strong>Companion files (same repo / project):</strong>
+- <code>docs/2_TEAM_BRIEF_plan_roles_checkpoints.md</code>: the operational plan (roles, checkpoints, rules, pitch).
+- <code>docs/4_ALL_CHALLENGES_reference.md</code>: all 9 challenges in detail.
+- <code>docs/3_TEST_REPORT_results_and_coverage.md</code>: tests and the requirements coverage matrix.
+- <code>README.md</code>: how to run the code.</p>
+<p><strong>Teammate quick start:</strong> say "I am P1/P2/P3/P4" and read your role in <code>docs/2_TEAM_BRIEF_plan_roles_checkpoints.md</code> Section 6.</p>
+</blockquote>
+<hr />
+<h2 id="1-the-situation-in-one-paragraph">1. The situation in one paragraph</h2>
+<p>We're a team of <strong>4</strong> at the <strong>European Defence Tech Hackathon (EDTH) Paris, 20–22 Nov 2026</strong>. Pitches are Sunday evening for preselected teams. We're building <strong>"Siesta"</strong>, an edge sensor node that <strong>listens</strong> for drones (Challenge 9), <strong>looks</strong> with a camera detector and tracker only when needed (Challenge 6), and <strong>sends</strong> only the most valuable frames over a weak link (Challenge 8). All three run on the <strong>Axelera Embedded 110m (Metis AIPU, 1 GB)</strong>, which is available on site. Tagline: <em>"Eyes closed, ears open. We nap so you don't have to."</em> As of Sat 12:05 the code kit is written and <strong>passes 15/15 tests</strong> on the real kit data, and real model training is starting on the team's M4 Max MacBook. <strong>No real accuracy numbers exist yet.</strong></p>
+<hr />
+<h2 id="2-team-hardware-roles">2. Team, hardware, roles</h2>
+<table class="stack">
+<thead>
+<tr>
+<th>Role</th>
+<th>Person's machine</th>
+<th>Owns</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>P1</strong></td>
+<td><strong>MacBook Pro 16" M4 Max, 48 GB</strong> (the only fast machine; Apple GPU = MPS, not CUDA)</td>
+<td>Ch 6 detection: RF-DETR Nano training on tiles, tiled inference, COCO output</td>
+</tr>
+<tr>
+<td><strong>P2</strong></td>
+<td>laptop</td>
+<td>Ch 6 tracking: <code>detect_video.py</code> + <code>track.py</code>, MOT output</td>
+</tr>
+<tr>
+<td><strong>P3</strong></td>
+<td>laptop</td>
+<td>Ch 9 (first) then Ch 8: <code>train_cv.py</code>, <code>predict_consistent.py</code>, <code>train_rank.py</code>, <code>pool_clips.py</code></td>
+</tr>
+<tr>
+<td><strong>P4</strong></td>
+<td><strong>the team's one Windows laptop</strong> (WSL2 + Ubuntu 22.04)</td>
+<td>Axelera/Metis compile and benchmarks, integration, submission checks, demo video, pitch</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Hardware facts [verified]:</strong>
+- The <strong>Voyager SDK installs on Linux (Ubuntu 22.04+); Windows only via WSL2; macOS isn't listed.</strong> No Mac can compile for Metis. Compile on the Axelera host in the Spectrum Room, or on P4's WSL2 if the compiler-only install works without a card [unconfirmed].
+- <strong>RF-DETR 1.12.1 auto-detects Apple MPS</strong> and supports MPS training (gather-based grid_sample, because MPS lacks its backward). The kit accepts rfdetr ≥ 1.4.0.
+- The <strong>Ch 8/9 kit trainers default to CUDA-else-CPU</strong>, so pass <code>--device mps</code> on the Mac.
+- Check Python is native: <code>python -c "import platform; print(platform.machine())"</code> must print <code>arm64</code>.
+- <strong>Fallback for detector training:</strong> free Colab or Kaggle NVIDIA GPU, if the 1-epoch timing on the Mac says a full tiled run can't finish by about 18:00.
+- <strong>Ch 6 edge score = end-to-end throughput:</strong> the host-side decoder and tracker must be timed <strong>on the Axelera host</strong>, not the Mac.</p>
+<hr />
+<h2 id="3-what-the-team-was-given-sources">3. What the team was given (sources)</h2>
+<h3 id="event-resources-organisers-list-verified-from-the-team-lead">Event resources (organisers' list) [verified, from the team lead]</h3>
+<ol>
+<li><strong>3D printers</strong> from Druk Army (3D Print Army). Not used by us.</li>
+<li><strong>Fire Point equipment for Challenge 2</strong> (hall near entrance); the listed "equipment" only repeats the Ch 2 specs. Not used.</li>
+<li><strong>Equipment for the Axelera challenges (06–09) in the Spectrum Room, upstairs.</strong> This is what we use.</li>
+<li><strong>Featherless AI</strong>: $25 LLM API credits, promo code <code>EDTH26</code>, OpenAI-compatible base URL <code>https://api.featherless.ai/v1</code>, one use per account. It's an LLM API, <strong>not</strong> training GPUs. Optional coding help only, never inside the pipeline.</li>
+<li><strong>Alta Ares</strong> sits in the ground-floor restaurant, has RC drones (for their Search &amp; Destroy challenge), and published a GitHub repo <code>AA-OpenProjects/AA-Hackathon-EDTH-202611</code>.</li>
+</ol>
+<h3 id="the-9-challenges-full-detail-in-docs4_all_challenges_referencemd">The 9 challenges (full detail in <code>docs/4_ALL_CHALLENGES_reference.md</code>)</h3>
+<table class="stack">
+<thead>
+<tr>
+<th>#</th>
+<th>Name (sponsor)</th>
+<th>Teams at registration</th>
+<th>Our verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Voice-to-Map (Lysk)</td>
+<td>9</td>
+<td>Not chosen: crowded, no scorer</td>
+</tr>
+<tr>
+<td>2</td>
+<td>"Keep It Level" stabilised antenna platform (Fire Point)</td>
+<td>2</td>
+<td>Not chosen: needs controls and CAD skills</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Search &amp; Destroy: target re-acquisition + autonomous strike guidance (Alta Ares)</td>
+<td>5</td>
+<td>Not chosen. <strong>Claude won't help develop autonomous strike guidance.</strong></td>
+</tr>
+<tr>
+<td>4</td>
+<td>Fleet Orchestration (Alta Ares)</td>
+<td>7</td>
+<td>Not entered; appears only as a "next step" in the pitch</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Jet-drone interceptor (Frontier Defence Labs)</td>
+<td>0</td>
+<td>Infeasible (needs jet-engine facilities)</td>
+</tr>
+<tr>
+<td><strong>6</strong></td>
+<td><strong>Small Aircraft Detection &amp; Tracking (Piotr Gryko / Axelera)</strong></td>
+<td>4</td>
+<td><strong>CHOSEN</strong></td>
+</tr>
+<tr>
+<td>7</td>
+<td>RGB + Thermal detection &amp; tracking (Piotr Gryko)</td>
+<td>1</td>
+<td>Not chosen (outside our chain)</td>
+</tr>
+<tr>
+<td><strong>8</strong></td>
+<td><strong>Edge Video Triage (Piotr Gryko)</strong></td>
+<td>1</td>
+<td><strong>CHOSEN</strong></td>
+</tr>
+<tr>
+<td><strong>9</strong></td>
+<td><strong>Acoustic-to-Visual Drone Detection (Piotr Gryko)</strong></td>
+<td>3</td>
+<td><strong>CHOSEN</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Data:</strong> one pCloud link for Ch 6–9 (from the challenge pages). The team lead uploaded the three kits: <code>challenge-6-cuas-tracking_tar.gz</code>, <code>challenge-8-edge-triage_tar.gz</code>, <code>challenge-9-acoustic-visual-cuas_tar.gz</code>.</p>
+<p><strong>Kit numbering trap [verified]:</strong> inside the kits, <strong>Ch 6 = "Challenge 1"</strong>, <strong>Ch 8 = "Challenge 4"</strong>, <strong>Ch 9 = "Challenge 5"</strong>.</p>
+<h3 id="facts-about-the-challenges-we-didnt-choose-in-case-it-comes-up">Facts about the challenges we didn't choose (in case it comes up)</h3>
+<ul>
+<li><strong>Ch 4 [verified from the repo]:</strong></li>
+<li>Hand-in is a <code>planner.py</code>, <strong>Python standard library only</strong>, 60 s per scenario, invalid plan = 0.</li>
+<li>Live board on 8 public scenarios; deadline <strong>Sun 22 Nov 12:00</strong>.</li>
+<li>The repo has <strong>no link-loss part</strong>, although the PDF mentioned one.</li>
+<li>Score = points − λ·energy − μ·effectors.</li>
+<li><strong>Ch 3 [verified from the repo]:</strong> a PyBullet sim, 30 Hz stick commands, hidden terrains, jury-judged.</li>
+<li><strong>Madrid hook [verified via news reports]:</strong> <strong>3 Feb 2020, Madrid-Barajas</strong> closed around 12:30–14:30 after pilots reported a drone. 26 flights were rerouted, and the Civil Guard later found no proof the drone existed.</li>
+</ul>
+<hr />
+<h2 id="4-decision-log-chronological-with-reasons">4. Decision log (chronological, with reasons)</h2>
+<ol>
+<li><strong>Fri 21:50, first look at Ch 6.</strong> Explained the metrics (mAP, small-object AP, MOTA, IDF1, continuity) and the edge constraint.</li>
+<li><strong>Idea: combine Ch 4 + Ch 6.</strong> Initially suggested a story link. <strong>Corrected after reading the Ch 4 brief:</strong> the planner's only input is a scenario JSON, so there's no technical link; the challenges are scored separately.</li>
+<li><strong>Reviewed all 9 challenges</strong> with resources. Ranked them; teammates liked 4, 6 and 9. Advised against three separate submissions. Proposed 6 + 9, then <strong>6 + 8 + 9</strong> ("hear → look → send"), all same sponsor, low competition.</li>
+<li><strong>Name:</strong> the team lead proposed "Siesta Defense System" with "We nap so you don't have to". Claude suggested dropping "Defense System" (it detects and confirms; it doesn't defend), adding "Eyes closed, ears open" (answers "what if it sleeps through an attack?": only the camera naps), and using the <strong>Barajas 2020</strong> story as the hook and close ("drone confirmed" or "reopen the runway").</li>
+<li><strong>Kits analysed (Sat 10:40).</strong> Key discoveries:</li>
+<li>The Ch 9 kit itself recommends the acoustic → RF-DETR cascade.</li>
+<li>Tiny drones (7–10 px in full-HD video).</li>
+<li>Weak baselines (Ch 6 MOTA −0.013; Ch 8 Spearman −0.157).</li>
+<li>Ch 8 labels are clip-constant.</li>
+<li>Ch 9 wake == drone_buzz.</li>
+<li>The MOT scorer penalises a misplaced box twice.</li>
+<li><strong>Probes run:</strong> motion finds tiny drones but makes clutter (motion-only MOTA −0.56). The physics sound features are weak (LOO F1 0.31), so they were <strong>cut</strong>.</li>
+<li><strong>Scope review (Sat 11:00):</strong> a teammate's Claude said the plan was too broad. Resolved by priority ranking: <strong>Ch 6 (2 people) &gt; Ch 9 &gt; Ch 8</strong>, Ch 8 limited to clip pooling + ranking loss + Metis benchmark.</li>
+<li><strong>Hardware decided (11:03–11:12):</strong> M4 Max = P1; Windows = P4 (WSL2); questions to ask the Axelera team listed.</li>
+<li><strong>Code kit built (11:38–11:50)</strong> and <strong>full test suite run (12:05): 15/15 PASS.</strong> The suite found that motion windows cover the 7 px drone in seq 4 only 19% of the time. <strong>Decision:</strong> default raised from 6 to 12 windows; <strong>use FULL mode for scored submissions</strong>, motion mode for the efficiency story.</li>
+<li><strong>Working method:</strong> private GitHub repo (see <code>README.md</code> "Team workflow").</li>
+</ol>
+<hr />
+<h2 id="5-the-siesta-approach-ideas-ai-our-view-partly-verified">5. The Siesta approach (ideas A–I) [our view, partly verified]</h2>
+<table class="stack">
+<thead>
+<tr>
+<th>Idea</th>
+<th>Where</th>
+<th>What</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A. Zoom where it matters</td>
+<td>Ch 6 detection</td>
+<td>Train and infer on <strong>native-resolution 384 tiles</strong></td>
+<td>7 px drones vanish when 1920 px frames are resized to 384 [verified]. Tiled set built and loader-checked [test]</td>
+</tr>
+<tr>
+<td>B. Peek before you stare</td>
+<td>Ch 6 video</td>
+<td>Motion proposals → detector only on windows + periodic full sweep</td>
+<td>About 48% fewer detector calls [test]; coverage caveat for seq 4 [test]</td>
+</tr>
+<tr>
+<td>C. Scorer-aware output</td>
+<td>Ch 6 tracking</td>
+<td>Emit only confirmed tracks; fill short gaps; silence beats a wrong box</td>
+<td>Synthetic: MOTA −0.86 → +0.56 avg [test, synthetic]</td>
+</tr>
+<tr>
+<td>D. Two thresholds</td>
+<td>Ch 6</td>
+<td>Low threshold for COCO mAP, strict for MOT</td>
+<td>From scorer code [verified]</td>
+</tr>
+<tr>
+<td>E. Rank clips, not frames</td>
+<td>Ch 8</td>
+<td>Pool priority per <code>video_id</code></td>
+<td>Labels clip-constant [verified]; synthetic capture@1% 0.40 → 0.90 [test, synthetic]</td>
+</tr>
+<tr>
+<td>F. Train for order</td>
+<td>Ch 8</td>
+<td>RankNet pairwise loss + augmentation</td>
+<td>Baseline used MSE, no augmentation [verified]</td>
+</tr>
+<tr>
+<td>G. Consistent outputs</td>
+<td>Ch 9</td>
+<td>wake == (class == drone_buzz) via fused probability</td>
+<td>Identity holds 56/56 [verified]</td>
+</tr>
+<tr>
+<td>H. Augment + CV threshold</td>
+<td>Ch 9</td>
+<td>Time shift, gain, masks, background mixing; 7-fold CV on 56 clips</td>
+<td>Kit picks the threshold on 8 clips [verified]</td>
+</tr>
+<tr>
+<td>I. One chip, three models</td>
+<td>All</td>
+<td>Compile all three on Metis; cost ledger (latency, memory, INT8 drop)</td>
+<td>15–20% of each proposed score is Metis efficiency [verified]. FP32 sizes 103 / 89 / 3.6 / 3.6 MB; should fit 1 GB [estimate]</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Deliberately not doing:</strong>
+- Hard-coding "one object per sequence" (valid sequences have exactly 1 object; test may differ).
+- Tuning on test.
+- Calling camera-off time "energy" (the kit's <code>energy_savings_pct</code> key isn't measured energy).
+- Claiming Ch 6 detections feed Ch 8 (Ch 8 is mostly ground-level battlefield footage).
+- Physics sound features.
+- Appearance re-ID for tiny targets.</p>
+<hr />
+<h2 id="6-key-kit-facts-full-list-in-docs2_team_brief_plan_roles_checkpointsmd-section-2-verified">6. Key kit facts (full list in <code>docs/2_TEAM_BRIEF_plan_roles_checkpoints.md</code> Section 2) [verified]</h2>
+<p><strong>Ch 6</strong>
+- Classes <code>0 drone_air, 1 airplane, 2 helicopter</code>.
+- Train 859 (14 clips) / valid 422 / test 328; 200 calibration images.
+- 8 tracking sequences: valid seq 1–4 with GT, test seq 5–8.
+- COCO <code>category_id</code> is 0-based; MOT <code>class_id</code> and <code>frame</code> are 1-based; top 100 per image.
+- MOT matching is IoU ≥ 0.5, class-agnostic.
+- ONNX outputs must be read by name (<code>dets</code>, <code>labels</code>).
+- The baseline runs CPU ONNX Runtime at 40 ms/frame; no trained weights are shipped.
+- The backbone-only export (<code>features [1,256,24,24]</code>) is the Metis starting point.
+- Proposed judging: Detection 40 / Tracking 40 / Edge 20.</p>
+<p><strong>Ch 8</strong>
+- 947 frames / 282 clips; train 698 / valid 138 / test 111.
+- Test budgets k = 1 (1%) and 6 (5%); ties broken pessimistically.
+- JSONL <code>{"id", "triage_keep", "priority_score"}</code>.
+- Proposed judging: capture 55 / Spearman 25 / Metis 20 (bonus for clip dedup and 100% on-chip).</p>
+<p><strong>Ch 9</strong>
+- 62 clips; train 48 / valid 8 / test 6.
+- JSONL <code>{"id", "wake_triggered", "sound_class"}</code>.
+- The trainer stores the wake threshold inside the ONNX.
+- Proposed judging: wake F1 40 / accuracy 25 / camera-off 20 / Metis 15.</p>
+<p><strong>Metis compile [verified, Axelera docs]</strong>
+- <code>axcompile -i model.onnx --imageset &lt;calib&gt; --transform preprocess.py --input-shape 1,3,H,W -o out/</code>.
+- <code>--transform</code> loads <code>get_preprocess_transform(image)</code>, which takes a PIL image or array and returns a <code>torch.Tensor</code>.
+- Output: <code>compiled_model/</code> + <code>compilation_report.json</code> (with a <code>status</code> field).
+- The CNNs have normalisation inside the graph; RF-DETR needs ImageNet normalisation.</p>
+<hr />
+<h2 id="7-code-kit-map-repo-layout">7. Code kit map (repo layout)</h2>
+<pre><code>ch6_detection_tracking/build_tiled_dataset.py   P1  native 384 crops + originals + negatives, RF-DETR folder layout
+ch6_detection_tracking/tiling.py                     shared: kit decode import, tile grid, Detector, class-wise NMS
+ch6_detection_tracking/tiled_detect.py          P1  COCO preds for valid/test (tiles + whole-frame pass)
+ch6_detection_tracking/detect_video.py          P2  per-frame detections, modes full | motion (default 12 windows)
+ch6_detection_tracking/track.py                 P2  tracker + output policy -&gt; MOT files (offline / --online / --kit for camera comp)
+ch6_detection_tracking/synth_test.py            P2  synthetic tracker mechanics test
+ch8_edge_triage/train_rank.py            P3  kit model + RankNet + augmentation; selection on clip-pooled valid
+ch8_edge_triage/pool_clips.py            P3  clip pooling for valid/test JSONL
+ch9_acoustic_wake/train_cv.py              P3  augmentation + 7-fold CV threshold + fused rule; exports ONNX with metadata
+ch9_acoustic_wake/predict_consistent.py    P3  consistent JSONL predictions
+metis_axelera_compile/preprocess_cnn.py     P4  axcompile transform for Ch 8/9 (224, no normalisation)
+metis_axelera_compile/preprocess_rfdetr.py  P4  axcompile transform for Ch 6 (384, ImageNet normalisation)
+check_submissions_before_upload.py        ALL pre-upload checker (must print PASS)
+tests/run_all_tests.py      ALL 15 tests; rerun with real models via --c6-onnx/--c8-onnx/--c9-onnx
+early_probes/motion_probe.py, early_probes/harmonic_probe.py   early probes (Section 8)
+</code></pre>
+<p>Exact commands are in <code>README.md</code>. Extra dependency: <code>opencv-python</code>.</p>
+<hr />
+<h2 id="8-every-measurement-so-far-none-are-real-model-scores">8. Every measurement so far (none are real model scores)</h2>
+<table class="stack">
+<thead>
+<tr>
+<th>Measurement</th>
+<th>Result</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Kit baselines (from kits, 1–2 epoch smoke)</td>
+<td>Ch 6 mAP@50 0.447, small_AP50 0.506, MOTA −0.013, IDF1 0.248; Ch 8 capture@1% 0, @5% 0.286, Spearman −0.157; Ch 9 wake F1 0.80, accuracy 0.50</td>
+<td>[verified, kit]</td>
+</tr>
+<tr>
+<td>Motion probe, seq 1–4</td>
+<td>target found in 99/150, 68/72, 145/150, 124/150 frames; 34/14/1151/197 candidates per frame; motion-only MOTA −0.56</td>
+<td>[test]</td>
+</tr>
+<tr>
+<td>Physics sound features</td>
+<td>LOO wake F1 0.31, so cut</td>
+<td>[test]</td>
+</tr>
+<tr>
+<td>Full test suite</td>
+<td>15/15 PASS (see <code>docs/3_TEST_REPORT_results_and_coverage.md</code>)</td>
+<td>[test]</td>
+</tr>
+<tr>
+<td>Motion-window coverage (12 windows)</td>
+<td>seq 1: 65%, seq 2: 97%, seq 3: 95%, <strong>seq 4: 19%</strong></td>
+<td>[test]</td>
+</tr>
+<tr>
+<td>Detector calls per frame</td>
+<td>full 13.3, motion 6.9 (about 48% fewer)</td>
+<td>[test, dummy model]</td>
+</tr>
+<tr>
+<td>Tracker policy</td>
+<td>MOTA −0.86 → +0.56, IDF1 0.37 → 0.76 (avg of 3)</td>
+<td>[test, <strong>synthetic</strong>]</td>
+</tr>
+<tr>
+<td>Ch 8 clip pooling</td>
+<td>capture@1% 0.40 → 0.90, @5% 0.80 → 0.99, Spearman 0.55 → 0.69</td>
+<td>[test, <strong>synthetic</strong>]</td>
+</tr>
+<tr>
+<td>Metis preprocessing vs kit</td>
+<td>max diff 0.0 on 448 images</td>
+<td>[test]</td>
+</tr>
+<tr>
+<td>Non-pretrained Ch 9 model</td>
+<td>collapses to "always wake"</td>
+<td>[test]: <strong>confirm the pretrained download</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="9-plan-from-here-sat-1205-onwards">9. Plan from here (Sat 12:05 onwards)</h2>
+<p><strong>Gate 0 (target 12:00, finish now):</strong> organiser answers, installs, data checks, <code>v0</code> baselines. See <code>docs/2_TEAM_BRIEF_plan_roles_checkpoints.md</code> 0a.</p>
+<table class="stack">
+<thead>
+<tr>
+<th>When</th>
+<th>Must be true</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sat 13:00</td>
+<td>Valid <code>v0</code> submissions for Ch 6 (COCO + MOT), Ch 8, Ch 9; Ch 9 CNN compile attempted on Metis</td>
+</tr>
+<tr>
+<td>Sat 14:00, cut line</td>
+<td>RF-DETR backbone compiles, or stop and report CPU INT8</td>
+</tr>
+<tr>
+<td>Sat ~14:00</td>
+<td>Tiled RF-DETR training launched on the M4 Max</td>
+</tr>
+<tr>
+<td>Sat 19:00</td>
+<td>Tracker beats baseline on valid (leave-one-sequence-out); Ch 8/9 improved; cascade demo on ≥ 1 clip; <code>v1</code></td>
+</tr>
+<tr>
+<td>Sun 11:00</td>
+<td>Final <code>v2</code> test files, checker PASS, submitted early</td>
+</tr>
+<tr>
+<td>Sun 12:00</td>
+<td>Feature freeze; demo video recorded; afternoon pitch rehearsals</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Next actions per person:</strong>
+- <strong>P1:</strong> 1-epoch timing on MPS → build tiled set → train → compare tiled vs untiled on valid.
+- <strong>P2:</strong> run <code>detect_video.py --mode full</code> with P1's model → <code>track.py</code> → tune with leave-one-sequence-out.
+- <strong>P3:</strong> <code>train_cv.py</code> (check the pretrained weights load) → <code>train_rank.py</code> → pooling.
+- <strong>P4:</strong> Axelera room answers → compile the Ch 9 model first.</p>
+<hr />
+<h2 id="10-open-questions-unconfirmed-owner-p4-unless-stated">10. Open questions [unconfirmed] (owner P4 unless stated)</h2>
+<ol>
+<li>Can one team submit to Ch 6, 8 and 9? How is a combined project judged and pitched?</li>
+<li>Deadlines and upload method for test predictions (Ch 6/8/9).</li>
+<li>Are the kits' proposed judging weights final? What's the hardware measurement protocol?</li>
+<li>Axelera room: device count, host OS/CPU, SDK version, booking, SSH, running our own Python, power measurement, compiler-only install on WSL2.</li>
+<li>Pitch length and preselection time.</li>
+<li>Optional: permission to film/record an Alta Ares RC drone for a real-drone demo (only under organiser safety rules).</li>
+</ol>
+<hr />
+<h2 id="11-rules-every-teammate-and-every-claude-follows">11. Rules every teammate and every Claude follows</h2>
+<ol>
+<li>Never tune on test. Calibration folders are for INT8 only.</li>
+<li>Only kit evaluators produce reportable numbers; label each with model, FP32/INT8 and hardware.</li>
+<li>Keep a valid tagged submission at all times; run <code>check_submissions_before_upload.py</code> before every upload; submit early.</li>
+<li>Don't overclaim: say "camera-off time", not energy; small test sets are noisy; synthetic results are not scores.</li>
+<li>No secrets in the repo; no datasets or model weights in git.</li>
+<li><strong>Claude won't assist with Challenge 3's autonomous strike guidance.</strong> Siesta is detection, confirmation and data triage.</li>
+</ol>
+<hr />
+<h2 id="12-glossary">12. Glossary</h2>
+<ul>
+<li><strong>MOTA</strong>: 1 − (misses + false positives + ID switches) / ground-truth boxes.</li>
+<li><strong>IDF1</strong>: how consistently each object keeps one ID.</li>
+<li><strong>Continuity</strong>: share of ground-truth frames covered.</li>
+<li><strong>small_AP</strong>: AP on boxes &lt; 32×32 px.</li>
+<li><strong>Capture@k%</strong>: high-priority frames among the top k% (budget-normalised).</li>
+<li><strong>MPS</strong>: Apple GPU backend.</li>
+<li><strong>Metis / Embedded 110m</strong>: Axelera's AI chip on an M.2 card, 1 GB.</li>
+<li><strong>Voyager SDK / axcompile</strong>: Axelera's toolchain.</li>
+<li><strong>INT8 calibration</strong>: setting quantisation ranges using sample images.</li>
+<li><strong>Host tail</strong>: the code that runs on the host CPU after the chip (decoder, tracker).</li>
+<li><strong>LOO / leave-one-sequence-out</strong>: tune on 3 sequences, test on the 4th, rotate.</li>
+</ul></main></body></html>
