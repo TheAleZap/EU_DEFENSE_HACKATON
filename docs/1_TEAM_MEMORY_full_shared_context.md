@@ -190,6 +190,10 @@ Exact commands are in `README.md`. Extra dependency: `opencv-python`.
 | Metis preprocessing vs kit | max diff 0.0 on 448 images | [test] |
 | Non-pretrained Ch 9 model | collapses to "always wake" | [test]: **confirm the pretrained download** |
 | Ch 6 RF-DETR Nano, 1 epoch, untiled, M4 Max MPS (Sat 12:34) | 114 s/epoch wall incl. val; valid mAP50 0.455, mAP50_95 0.280, small_AP50 0.576; FP32 CPU ORT 26 ms/img | [verified, kit scorer] |
+| Ch 6 RF-DETR Nano, kit baseline 20 ep (early stop at 16), untiled, M4 Max MPS (Sat 12:52) | 16 min; valid mAP50 0.595, mAP50_95 0.392, small_AP50 0.734 | [verified, kit scorer] |
+| Same model, tiled inference (tiled_detect.py) | valid mAP50 0.464, small_AP50 0.691, 13.9 calls/img: worse than untiled | [verified, kit scorer] |
+| Same model, kit MOT predictor | valid MOTA −0.215, IDF1 0.157 | [verified, kit scorer] |
+| Ch 6 v0 submission (Sat 13:20) | `submissions/v0/` COCO test + MOT seq 5–8 from the 20-epoch model; check_submissions PASS | [test] |
 | Ch 6 tiled dataset build (Sat 12:35) | train 3266 imgs / 2544 boxes, valid 1590 / 1182, 5 s; matches test counts | [test] |
 
 ---
