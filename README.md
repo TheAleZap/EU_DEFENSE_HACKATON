@@ -35,7 +35,12 @@ python ch6_detection_tracking/detect_video.py --kit $C6 --onnx .../inference_mod
 python ch6_detection_tracking/track.py --dets dets_motion.json --out-dir pred_mot --kit $C6
 python $C6/starter-kit/evaluate_submissions.py mot --gt-dir $C6/tracking_eval --pred-dir pred_mot --split valid
 ```
-Tune `--high-thr --confirm-score --min-hits --min-len --max-gap --gate` with **leave-one-sequence-out** over seq_0001–0004.
+Tune `--high-thr --confirm-score --min-hits --min-len --max-gap --gate` with **leave-one-sequence-out** over seq_0001–0004:
+```bash
+# grid over track.py settings, scored by the kit MOT scorer; prints HELD-OUT per-sequence numbers (report these)
+python ch6_detection_tracking/tune_tracker.py --dets dets_full.json --kit $C6        # --quick for a small grid, --no-cam to skip camera compensation
+#    ends by printing the track.py command with the settings that are best on all 4 valid sequences (use it for test seq 5-8)
+```
 `ch6_detection_tracking/synth_test.py` is the mechanics test (synthetic detections from GT, **not a real score**): policy OFF gives MOTA about −0.85 / IDF1 0.37; policy ON gives MOTA +0.49 to +0.61 / IDF1 0.72 to 0.80.
 `track.py` writes files for all sequences in the detections JSON, including test seq_0005–0008.
 
