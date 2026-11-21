@@ -1,0 +1,32 @@
+# data and kits (never in git)
+kits/
+data/
+datasets/
+tiled_dataset/
+*.tar.gz
+*.zip
+*.jpg
+*.jpeg
+*.png
+*.mp4
+*.wav
+# models and outputs
+runs/
+exports/
+out_*/
+metis_axm/
+compiled_model/
+quantized_model/
+*.pth
+*.pt
+*.onnx
+*.axm
+# secrets and local
+.env
+*.key
+.venv/
+venv/
+__pycache__/
+*.pyc
+.DS_Store
+/tmp/

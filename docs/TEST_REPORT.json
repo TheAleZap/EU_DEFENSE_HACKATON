@@ -1,0 +1,261 @@
+[
+  {
+    "test": "C6-1 tiled dataset: structure, counts, every original box kept, boxes inside images, native scale",
+    "status": "PASS",
+    "seconds": 13.1,
+    "train": {
+      "images": 3266,
+      "boxes": 2544,
+      "orig_boxes": 842,
+      "neg_crops": 723,
+      "median_box_area_orig": 1485.0,
+      "median_box_area_crops": 1485.0
+    },
+    "valid": {
+      "images": 1590,
+      "boxes": 1182,
+      "orig_boxes": 387,
+      "neg_crops": 394,
+      "median_box_area_orig": 308.0,
+      "median_box_area_crops": 308.0
+    },
+    "test_split": "copied unchanged"
+  },
+  {
+    "test": "C6-2 tile grid covers every pixel of every valid/test image size, tiles <= 384",
+    "status": "PASS",
+    "seconds": 0.0,
+    "image_sizes_checked": 14,
+    "max_tiles_per_image": 24
+  },
+  {
+    "test": "C6-3 class-wise NMS keeps distinct classes, removes duplicates, caps top-k",
+    "status": "PASS",
+    "seconds": 0.0,
+    "cases": 2
+  },
+  {
+    "test": "C6-4 tiled_detect on ALL valid + test images -> kit COCO scorer accepts; checker accepts test file",
+    "status": "PASS",
+    "seconds": 52.4,
+    "valid_scored_keys": [
+      "mAP50",
+      "mAP50_95",
+      "num_images",
+      "small_AP50",
+      "small_AP50_95"
+    ],
+    "test_images": 328,
+    "calls_per_image": 9.41
+  },
+  {
+    "test": "C6-5 'peek before you stare': do motion windows actually cover the real target? (real videos, no detector)",
+    "status": "PASS",
+    "seconds": 35.0,
+    "fraction_of_non_sweep_frames_where_target_is_inside_a_motion_window": {
+      "seq_0001": {
+        "max_windows_6": 0.647,
+        "max_windows_12": 0.647
+      },
+      "seq_0002": {
+        "max_windows_6": 0.97,
+        "max_windows_12": 0.97
+      },
+      "seq_0003": {
+        "max_windows_6": 0.619,
+        "max_windows_12": 0.95
+      },
+      "seq_0004": {
+        "max_windows_6": 0.007,
+        "max_windows_12": 0.187
+      }
+    },
+    "note": "motion windows alone (no carry-over from previous detections); carry-over only adds coverage"
+  },
+  {
+    "test": "C6-6 detect_video (full + motion) on ALL 8 sequences -> track.py -> kit MOT scorer + checker PASS",
+    "status": "PASS",
+    "seconds": 229.7,
+    "mean_model_calls_per_frame": {
+      "full": 13.25,
+      "motion": 6.87
+    },
+    "per_sequence": {
+      "full": {
+        "seq_0001": 13.0,
+        "seq_0002": 3.0,
+        "seq_0003": 25.0,
+        "seq_0004": 25.0,
+        "seq_0005": 17.0,
+        "seq_0006": 7.0,
+        "seq_0007": 13.0,
+        "seq_0008": 3.0
+      },
+      "motion": {
+        "seq_0001": 6.76,
+        "seq_0002": 4.78,
+        "seq_0003": 10.03,
+        "seq_0004": 9.95,
+        "seq_0005": 4.33,
+        "seq_0006": 7.24,
+        "seq_0007": 8.22,
+        "seq_0008": 3.66
+      }
+    }
+  },
+  {
+    "test": "C6-7 tracker output policy on synthetic detections (3 seeds), kit MOT scorer: NOT a real score",
+    "status": "PASS",
+    "seconds": 5.4,
+    "seeds": [
+      {
+        "policy_off": {
+          "MOTA": -0.8103,
+          "IDF1": 0.4066,
+          "track_continuity": 0.7224,
+          "id_switches": 10
+        },
+        "policy_on": {
+          "MOTA": 0.6092,
+          "IDF1": 0.8035,
+          "track_continuity": 0.7961,
+          "id_switches": 0
+        }
+      },
+      {
+        "policy_off": {
+          "MOTA": -0.9215,
+          "IDF1": 0.352,
+          "track_continuity": 0.6936,
+          "id_switches": 11
+        },
+        "policy_on": {
+          "MOTA": 0.5805,
+          "IDF1": 0.7475,
+          "track_continuity": 0.736,
+          "id_switches": 1
+        }
+      },
+      {
+        "policy_off": {
+          "MOTA": -0.8563,
+          "IDF1": 0.3424,
+          "track_continuity": 0.6982,
+          "id_switches": 11
+        },
+        "policy_on": {
+          "MOTA": 0.4885,
+          "IDF1": 0.7159,
+          "track_continuity": 0.7692,
+          "id_switches": 3
+        }
+      }
+    ]
+  },
+  {
+    "test": "C8-1 pool_clips: ids/order preserved, scores in [0,1], clip-constant ranking, kit scorer accepts, synthetic gain",
+    "status": "PASS",
+    "seconds": 15.1,
+    "synthetic_noise_sigma_0.25_10_seeds": {
+      "frame": {
+        "recall_at_1pct": 0.4,
+        "recall_at_5pct": 0.8,
+        "priority_spearman": 0.549
+      },
+      "pooled": {
+        "recall_at_1pct": 0.9,
+        "recall_at_5pct": 0.986,
+        "priority_spearman": 0.686
+      }
+    }
+  },
+  {
+    "test": "C8-2 test-split pooling + checker on Ch 8 test file",
+    "status": "PASS",
+    "seconds": 1.6,
+    "used_trained_onnx": true
+  },
+  {
+    "test": "C9-1 predict_consistent: wake == (class == drone_buzz) on every clip; kit scorer accepts valid; test file written",
+    "status": "PASS",
+    "seconds": 1.2,
+    "scorer_keys": [
+      "energy_savings_pct",
+      "optical_duty_cycle",
+      "sound_class_accuracy",
+      "wake_F1"
+    ]
+  },
+  {
+    "test": "C9-2 label identity used by the consistency rule holds on all 56 labelled clips",
+    "status": "PASS",
+    "seconds": 0.0,
+    "clips": 56
+  },
+  {
+    "test": "M-1 Metis preprocess callbacks == kit inference preprocessing (all calibration images)",
+    "status": "PASS",
+    "seconds": 4.2,
+    "images_compared": 448,
+    "max_abs_diff": 0.0
+  },
+  {
+    "test": "CHK-1 check_submissions PASSES on the complete test set (Ch 6 COCO + 4 MOT, Ch 8, Ch 9)",
+    "status": "PASS",
+    "seconds": 0.3
+  },
+  {
+    "test": "CHK-2 check_submissions FAILS on 6 injected mistakes (each must be caught)",
+    "status": "PASS",
+    "seconds": 1.8,
+    "caught": {
+      "missing_mot_sequence": true,
+      "mot_class_0_based": true,
+      "mot_duplicate_row": true,
+      "coco_category_3": true,
+      "c8_missing_id": true,
+      "c9_bad_class": true
+    }
+  },
+  {
+    "test": "RF-1 RF-DETR's own COCO loader accepts the tiled dataset (train + valid)",
+    "status": "PASS",
+    "seconds": 3.2,
+    "tiled": {
+      "train": {
+        "len": 3266,
+        "label_ids_seen": [
+          0,
+          1,
+          2
+        ]
+      },
+      "val": {
+        "len": 1590,
+        "label_ids_seen": [
+          0,
+          1,
+          2
+        ]
+      }
+    },
+    "kit_original": {
+      "train": {
+        "len": 859,
+        "label_ids_seen": [
+          0,
+          1,
+          2
+        ]
+      },
+      "val": {
+        "len": 422,
+        "label_ids_seen": [
+          0,
+          1,
+          2
+        ]
+      }
+    }
+  }
+]
