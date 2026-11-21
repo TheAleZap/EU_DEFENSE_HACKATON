@@ -2,7 +2,7 @@
 
 > **Full shared context of the team lead's chat: `docs/1_TEAM_MEMORY_full_shared_context.md`. Read it first.**
 >
-> **How to use this file (each teammate):** upload this file to Claude (or save it as `CLAUDE.md` in the repo root), then say **"I am P_ — help me with my part."** Read **Section 0a (Gate 0 checklist)**, **Section 10 (decision history)** and **your role in Section 6** first. Companion reference: `docs/4_ALL_CHALLENGES_reference.md`. Roles: **P1 = Ch 6 detection (M4 Max Mac)**, **P2 = Ch 6 tracking**, **P3 = Ch 9 then Ch 8**, **P4 = Metis + integration + pitch (Windows laptop)**.
+> **How to use this file (each teammate):** upload this file to Claude (or save it as `CLAUDE.md` in the repo root), then say **"I am P_ — help me with my part."** Read **Section 0a (Gate 0 checklist)**, **Section 10 (decision history)** and **your role in Section 6** first. Companion reference: `docs/4_ALL_CHALLENGES_reference.md`. Roles: **P1 Alejandro = Ch 6 detection (M4 Max Mac)**, **P2 Salo = Ch 6 tracking**, **P3 Viktoriia = Ch 9 only (Ch 8 dropped Sat 13:55)**, **P4 Dana = Metis + integration + pitch (Windows laptop)**.
 >
 > **Instructions for Claude reading this:** this is the team's agreed plan. Stay inside the assigned role and the rules in Section 9. Facts marked **[verified]** were checked directly against the official starter kits and data. Facts marked **[unconfirmed]** were not. Never invent metrics, formats or kit behaviour. If something isn't here or in the kit, say so. Prefer simple, validated, working solutions. Keep a valid submission at all times.
 
@@ -225,7 +225,7 @@ All three run on the **Axelera Embedded 110m** (Metis chip, 1 GB memory), measur
 ### Priority ranking and scope (decided Sat 11:00 after review)
 - **Priority 1, Ch 6 (two people, P1 + P2):** win it outright. Most teams, most points, biggest headroom. Tiled detection (A) + motion proposals confirmed by the detector (B) + scorer-aware output policy (C/D).
 - **Priority 2, Ch 9 (P3, first):** fully on-chip, and the sponsor's own recommended cascade. Ideas G + H.
-- **Priority 3, Ch 8 (P3, second):** cheap, 1 competing team. **Only** clip pooling (E) + ranking loss (F) + a Metis benchmark. Nothing more.
+- ~~**Priority 3, Ch 8 (P3, second):** cheap, 1 competing team. **Only** clip pooling (E) + ranking loss (F) + a Metis benchmark. Nothing more.~~ **Dropped Sat 13:55 (team lead):** no Ch 8 submission; the code stays as pitch material for the "send" step.
 - **Cut:** physics sound features (tested weak); second seeds and extra-long Ch 6 runs unless the GPU is idle; Ch 6 host decoder if the backbone doesn't compile by 14:00.
 - **Ambitious demo (optional, needs organiser permission and their safety rules):** film and record a **real drone** at the venue (Alta Ares has RC drones) and run Siesta on it on the Metis chip. Fallback: the recorded cascade on Ch 9 paired clips.
 
@@ -260,7 +260,7 @@ frames ─► [Ch 8 triage model on Metis] ─► clip-pooled priority ─► to
 2. P3's Ch 8/9 cross-validation runs go in the gaps. These small CNNs also train on a laptop CPU if the GPU is busy.
 3. Nobody leaves an idle job holding the GPU. Log every run in the experiment log.
 
-### P1: Ch 6 detection ("zoom where it matters")
+### P1 (Alejandro): Ch 6 detection ("zoom where it matters")
 1. Set up the environment on the GPU machine and run the kit's quickstart end to end: `train_rfdetr.py --model nano --epochs 20` → export → predict → evaluate. That gives the **`v0` safety submission with a properly trained baseline** (not the 1-epoch smoke model). Record time per epoch and GPU memory use. Start with the kit defaults (batch 8, grad-accum 2); if memory runs out, halve the batch and double grad-accum.
 2. **Build a tiled training set:** native-resolution 384×384 crops around every box (with jitter) plus random negative crops from negatives and backgrounds. Keep COCO format, so `train_rfdetr.py` works unchanged.
 3. **Train RF-DETR Nano on the crops** (the kit's recommended deployment model; keep Nano as the deliverable). With the GPU, run a clean comparison, all scored with the kit evaluator on valid:
@@ -273,7 +273,7 @@ frames ─► [Ch 8 triage model on Metis] ─► clip-pooled priority ─► to
 5. Evaluate with the kit's `evaluate_submissions.py detect` only.
 6. **Hand to P2:** a function `detect(crop_or_frame) → [(cls, score, box)]`. **Hand to P4:** the exported ONNX (full + backbone).
 
-### P2: Ch 6 tracking ("peek before you stare" + scorer-aware policy)
+### P2 (Salo): Ch 6 tracking ("peek before you stare" + scorer-aware policy)
 1. Start from `early_probes/motion_probe.py` (motion proposals with camera-motion compensation).
 2. **Proposal → confirm:** run P1's detector on crops around motion candidates (merge overlapping candidates; cap the count per frame by motion strength) **plus** a periodic full-frame tile sweep.
 3. **Tracker:** camera-motion-compensated Kalman filter; center-distance association for tiny boxes (IoU is unreliable at 7 px); confirm after N consistent hits; delete after M misses.
@@ -281,14 +281,14 @@ frames ─► [Ch 8 triage model on Metis] ─► clip-pooled priority ─► to
 5. **Tune with leave-one-sequence-out over the 4 valid sequences.** Report per-sequence numbers, never just the best one.
 6. Evaluate only with `evaluate_submissions.py mot --split valid`. **Write test MOT files for seq_0005–0008** with the same settings.
 
-### P3: Ch 9 and Ch 8 (the two small CNNs)
+### P3 (Viktoriia): Ch 9 only
 **Ch 9:**
 1. Baseline run; log wake F1, accuracy, duty cycle.
 2. **Augmentation (idea H):** waveform mixing (drone + ambience/vehicle at random SNR), time shift, gain, then regenerate log-mel spectrograms **exactly like the kit's PNGs** (check the kit's spectrogram parameters; if unclear, augment the PNGs with time/frequency masking instead).
 3. **Consistency (idea G):** a single decision drives both outputs.
 4. Select settings with **cross-validation over all 56 labelled clips**. Then set the final threshold, document it, and store it in the ONNX the way the starter does. (Physics features are cut; see Section 4.)
 
-**Ch 8:**
+**Ch 8 (DROPPED Sat 13:55, kept for reference / pitch only):**
 1. Baseline run.
 2. **Ranking loss** on priority (pairwise or ListNet) plus the existing auxiliary heads.
 3. Image augmentation (flips, crops, colour jitter, night-like darkening).
@@ -298,7 +298,7 @@ frames ─► [Ch 8 triage model on Metis] ─► clip-pooled priority ─► to
 
 **Hand to P4:** both ONNX files (static shapes, opset 17, as the starters export). On the Mac, run both trainers with `--device mps` (or the CPU if the GPU is busy with Ch 6).
 
-### P4: Metis, integration, pitch (safety owner)
+### P4 (Dana): Metis, integration, pitch (safety owner)
 1. **Spectrum Room:** confirm the hardware and SDK version, book device time, and fill in Section 0.
 2. **Compile order:** Ch 9 CNN → Ch 8 CNN → Ch 6 backbone (host decoder separately).
 3. Write `preprocess.py` per model (Section 2 rules). INT8-calibrate with each kit's calibration folder **only**.
