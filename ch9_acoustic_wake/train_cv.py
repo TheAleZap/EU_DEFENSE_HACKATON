@@ -35,7 +35,7 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, Dataset
 
-THRESHOLDS = [round(t, 2) for t in np.arange(0.20, 0.81, 0.05)]
+THRESHOLDS = [round(t, 2) for t in np.arange(0.20, 0.96, 0.05)]
 
 
 def load_kit(challenge_dir: Path):
@@ -113,10 +113,10 @@ def train_one(kit, items, args, device, mix_pool):
     model = kit.AcousticWakeCNN(args.arch, pretrained=not args.no_pretrained).to(device)
     ys = np.array([it[1] for it in items])
     pos, neg = ys.sum(), len(ys) - ys.sum()
-    pos_w = torch.tensor([min(2.0, max(1.0, (neg / max(1, pos)) ** 0.5))], device=device)
+    pos_w = torch.tensor([float(min(2.0, max(1.0, (neg / max(1, pos)) ** 0.5)))], dtype=torch.float32, device=device)
     bce, ce = nn.BCEWithLogitsLoss(pos_weight=pos_w), nn.CrossEntropyLoss()
     opt = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=1e-4)
-    dl = DataLoader(Rows(items, True, mix_pool), batch_size=args.batch_size, shuffle=True, num_workers=0)
+    dl = DataLoader(Rows(items, not args.no_augment, mix_pool), batch_size=args.batch_size, shuffle=True, num_workers=0)
     for _ in range(args.epochs):
         model.train()
         for x, y, c in dl:
@@ -140,6 +140,7 @@ def main() -> None:
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--device", default=None)
     ap.add_argument("--no-pretrained", action="store_true")
+    ap.add_argument("--no-augment", action="store_true", help="kit-style training, no augmentation")
     ap.add_argument("--duty-penalty", type=float, default=0.15, help="same utility as the kit: F1 - p*camera_on")
     args = ap.parse_args()
 
@@ -183,6 +184,15 @@ def main() -> None:
             best = (u, thr, m)
     _, thr, m = best
     print("OUT-OF-FOLD (56 clips) at fused thr", thr, json.dumps(m))
+    best_k = None
+    for thr2 in THRESHOLDS:
+        wake2 = oof[:, 0] >= thr2
+        cls2 = np.argmax(oof[:, 1:], axis=1)
+        m2 = metrics(wake2, cls2, y, c)
+        u2 = m2["wake_F1"] - args.duty_penalty * m2["camera_on"]
+        if best_k is None or u2 > best_k[0]:
+            best_k = (u2, thr2, m2)
+    print("OUT-OF-FOLD kit-style rule (wake prob only, class argmax) at thr", best_k[1], json.dumps(best_k[2]))
 
     final = train_one(kit, items, args, device, mix_pool)
     final.eval().cpu()
