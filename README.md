@@ -85,6 +85,17 @@ The data is about 1 GB, so it stays out of git, like the kits. Keep it at `~/edt
 **What we found (16:15, all leave-one-clip-out on the kit's 56 clips):**
 - **On-chip route: the extra data is a big win.** We skipped reverse-engineering the kit's PNGs. Instead `ch9_acoustic_wake/distill_cnn.py` makes its own log-mel spectrograms (16 kHz, 128 mel bands, 224×224) for both the kit clips and up to 6 windows per extra clip. It trains the kit's MobileNetV3-Small on them. The AudioSet model acts as a teacher, giving soft 4-class labels for every window, so the coarse drone/no-drone labels stop being a problem. Results: class accuracy jumps from 0.34 to 0.59, wake F1 from 0.48 to 0.59, and camera-on time falls from 96% to 39%. Training for 20 epochs works best (12 epochs: F1 0.58; 30 epochs: 0.44). Single runs vary by ±0.1, so treat 0.59 as the honest number, not the best seed's 0.67.
 - **AudioSet route: the extra data doesn't help.** The separate drone/no-drone model from plan step 2 above made wake F1 worse (0.46). Adding the extra windows to the 4-class model at low weight gave F1 0.55 and accuracy 0.75, within noise of the kit-only 0.53 and 0.73. v2 stays kit-only.
+- **Keeping only the drone videos doesn't help (16:45).** `ch9_acoustic_wake/select_drone_clips.py` sorts the 89 clips using their AI-written descriptions (objects, subjects, timestamped events, camera view, drone-audio flag) into 38 with the drone audible, 37 with a drone in the video but not heard (drone-camera strike footage, shooting at drones), and 14 with no drone (pure combat, tanks, speech). Training the on-chip CNN on each subset, 3 seeds each:
+
+  | Extra clips used | Wake F1 | Class acc | Camera on |
+  |---|---|---|---|
+  | All 89 (v3) | 0.585 | **0.589** | **39%** |
+  | Drone in video or audio (75) | 0.550 | 0.560 | 52% |
+  | Drone audible only (38) | 0.513 | 0.476 | 64% |
+  | Drone audible + no-drone (52) | **0.588** | 0.571 | 61% |
+
+  The no-drone clips matter: they teach the model what a drone is *not*, which keeps the camera off. So v3 keeps all 89. The drone filter is still how we pick demo clips.
+- **Ch 9 to Ch 6 link: the cascade demo works** (`ch9_acoustic_wake/cascade_demo.py`). It listens to a clip's audio in 5 s windows with the on-chip CNN, turns the camera on only when it hears `drone_buzz`, and then runs the Ch 6 detector on the video and draws the boxes. Demo model trained with 4 drone clips held out (the 4 clips below), so the demo is honest. Camera turned on for 3 of the 4: `787248` (Shahed, on the whole time), `788076` (drone over power lines, boxed as "drone"), `766411` (kamikaze drone, on for 32%: the approach is heard, the aftermath isn't). It missed `766422` (heard as a vehicle), a good failure case to show. Videos at `~/edth/runs/demos/` on Alejandro's Mac.
 - **So the two candidates are:** v2, the AudioSet model (better class accuracy, 86M parameters, Metis untested), and v3, the kit-sized CNN (better wake F1 and camera-on time, built for the chip). v3 has the better edge story. Both need the organisers to allow the extra data and/or the AudioSet model (v3 uses AudioSet as a teacher during training only). If either is refused, v1 (the kit baseline) is the fallback.
 
 ### Plan to Sunday
@@ -134,11 +145,11 @@ The data is about 1 GB, so it stays out of git, like the kits. Keep it at `~/edt
 | 6, tracking | **v1 done** (`submissions/v1/`, checker PASS): valid MOTA **+0.247**, IDF1 **0.448**, 3 ID switches (kit scorer). Whole-frame detections + `track.py` defaults | Tuned settings reach +0.283 in-sample, but leave-one-out says the tuning doesn't generalise, so defaults ship. Tiny-drone hybrid tested (+0.314) but too fragile to ship |
 | 9, acoustic wake | v1 = kit baseline. **v2 candidate**, AudioSet model + logistic regression (`audioset_probe.py`): wake F1 0.533, class acc 0.732, camera on 0.23. **v3 candidate**, kit CNN trained on kit + extra data with the AudioSet model as teacher (`distill_cnn.py`): wake F1 0.59, class acc 0.59, camera on 0.39 (average of 3 seeds). All leave-one-clip-out on 56 clips; both checker PASS | Organisers must confirm extra data and pretrained teacher are allowed. Average several seeds to steady v3. Compile v3 on Metis |
 | Axelera chip | **Hardware not available yet** | Prepare so compile can run the moment it arrives |
-| Pitch and demo | Mentor summary written (see "Project summary" above) | Slides, story, demo video |
+| Pitch and demo | Mentor summary written. **Cascade demo works** on 4 held-out real drone clips (camera on for 3, drone boxed by the Ch 6 detector) | Slides, story, cut the demo videos into the pitch |
 
 ### What each person does now
-- **Alejandro (P1), on the Mac:** (1) INT8 check: score the exported Nano backbone in INT8 against FP32 on valid, so the efficiency claim has numbers. (2) Help Viktoriia steady the v3 CNN: train 5 seeds and average their outputs (the ensemble's own leave-one-clip-out number is the one to report). (3) Run the Ch 6 detector on the `audio_export` drone videos for Salo's demo.
-- **Salo (P2):** pull `main` first, and use `detect_video.py --mode whole` from now on (RF-DETR Small was tested and tracks worse; stay on Nano). Tasks: (1) **demo clip**: pick 2–3 `audio_export` videos where a drone is visible (the Shahed clips, e.g. `787248`), run the v1 detector and tracker on them, and render the boxes and track IDs into a video; ask Alejandro for the data and model by AirDrop. (2) Per-sequence error analysis of v1 for the pitch: where the points are lost. (3) `track.py --online` numbers for an honest real-time demo.
+- **Alejandro (P1), on the Mac:** (1) INT8 check: score the exported Nano backbone in INT8 against FP32 on valid, so the efficiency claim has numbers. (2) Help Viktoriia steady the v3 CNN: train 5 seeds and average their outputs (the ensemble's own leave-one-clip-out number is the one to report). (3) ~~Ch 6 detector on the drone videos~~ done: cascade demo (16:50).
+- **Salo (P2):** pull `main` first, and use `detect_video.py --mode whole` from now on (RF-DETR Small was tested and tracks worse; stay on Nano). Tasks: (1) **demo**: Alejandro's `cascade_demo.py` already renders gated detection videos for 4 clips. Add the tracker to it (track IDs instead of per-frame boxes) and pick the best 1–2 clips with Dana; candidate clips are the `drone_audio` rows with an `of_drone` view in `clips.csv`. Remember to hold the demo clips out of the CNN's training. (2) Per-sequence error analysis of v1 for the pitch: where the points are lost. (3) `track.py --online` numbers for an honest real-time demo.
 - **Viktoriia (P3):** own the **on-chip Ch 9 route, now v3**. The spectrogram reverse-engineering is no longer needed: `ch9_acoustic_wake/distill_cnn.py` makes its own spectrograms and already trains the kit CNN on the extra data (wake F1 0.59, class acc 0.59; see "What we found"). Pull `main` and: (1) rerun it on your machine to confirm the numbers (command in the Ch 9 section below; needs the extra data and two logit caches from Alejandro by AirDrop). (2) Try to reduce the seed noise: average 3–5 seeds, or vary windows per clip (`--extra-max-windows`) and extra weight; keep only changes that improve the leave-one-clip-out numbers over several seeds. (3) Export calibration spectrograms for Dana: the chip must see the **same** spectrograms as `distill_cnn.py` makes, not the kit PNGs.
 - **Dana (P4):** (1) ask the organisers the rules questions 10–11 above: AudioSet-pretrained model, extra recordings, and a big model as teacher only. (2) Metis: compile the **v3 CNN** (`audio_wake_cnn.onnx`, AirDrop from Alejandro) first as soon as hardware appears, with Viktoriia's calibration spectrograms. (3) Pitch: build the "hear it, then look" storyboard around one real-drone `audio_export` clip with Salo. The story now has numbers: the camera is on only 39% of the time with the on-chip model, against 96% for the same model without our data. (4) Keep running `check_submissions_before_upload.py` on each new submission folder.
 
@@ -222,6 +233,14 @@ python ch9_acoustic_wake/distill_cnn.py --challenge-dir $C9 --extra ~/edth/extra
   --kit-logits runs/c9_audioset_logits.json --extra-logits runs/c9_audioset_extra_logits_w6.json \
   --epochs 20 --seed 42 --device mps --out runs/c9_distill_e20
 #    writes audio_wake_cnn.onnx, c9_test.jsonl and cv_report.json (out-of-fold numbers: report THESE). --no-extra for the kit-only comparison
+#    --extra-ids <file> trains on a subset of the extra clips (id lists from select_drone_clips.py)
+python ch9_acoustic_wake/select_drone_clips.py --extra ~/edth/extra/audio_export --out runs/c9_selection   # clips.csv + id lists
+```
+**Cascade demo (Ch 9 hears it, Ch 6 looks; run with the Ch 6 venv, ffmpeg adds the sound back):**
+```bash
+python ch9_acoustic_wake/cascade_demo.py --clip ~/edth/extra/audio_export/788076 --c9-onnx runs/c9_demo_holdout/audio_wake_cnn.onnx \
+  --c6-kit $C6 --c6-onnx $C6/starter-kit/exports/c6_base20/full/inference_model.onnx --out demo_788076.mp4
+#    use a CNN trained WITHOUT the demo clip (--extra-ids that leaves it out); --always-on for the no-gate comparison
 ```
 Earlier CNN route:
 ```bash

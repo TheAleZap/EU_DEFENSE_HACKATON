@@ -136,6 +136,7 @@ def main() -> None:
     ap.add_argument("--extra-logits", type=Path, default=None)
     ap.add_argument("--extra-max-windows", type=int, default=6)
     ap.add_argument("--extra-weight", type=float, default=0.5)
+    ap.add_argument("--extra-ids", type=Path, default=None, help="keep only these extra clip ids (select_drone_clips.py)")
     ap.add_argument("--no-extra", action="store_true", help="kit clips only (comparison)")
     ap.add_argument("--folds", type=int, default=7)
     ap.add_argument("--epochs", type=int, default=12)
@@ -166,6 +167,11 @@ def main() -> None:
         XE = np.array([e[2] for e in E])
         SE = extra_windows(args.extra, args.extra_max_windows)
         assert len(SE) == len(E), (len(SE), len(E))
+        if args.extra_ids:
+            keep_ids = set(args.extra_ids.read_text().split())
+            keep = [i for i, e in enumerate(E) if e[0] in keep_ids]
+            XE, SE = XE[keep], [SE[i] for i in keep]
+            print(f"--extra-ids: {len({E[i][0] for i in keep})} clips kept")
         print(f"extra windows: {len(SE)}")
 
     folds = [[] for _ in range(args.folds)]
